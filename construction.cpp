@@ -90,24 +90,28 @@ void game::init_construction()
  CONSTRUCT("Build Wall", 2, &construct::able_empty, &construct::done_nothing);
   STAGE(t_wall_half, 10);
    TOOL(itm_hammer, itm_hatchet, itm_nailgun, NULL);
-   COMP(itm_2x4, 10, NULL);
+   COMP(itm_2x4, 6, NULL);
    COMP(itm_nail, 20, NULL);
   STAGE(t_wall_wood, 10);
    TOOL(itm_hammer, itm_hatchet, itm_nailgun, NULL);
-   COMP(itm_2x4, 10, NULL);
+   COMP(itm_2x4, 6, NULL);
    COMP(itm_nail, 20, NULL);
 
- CONSTRUCT("Build Window", 3, &construct::able_wall_wood,
+ CONSTRUCT("Build Window", 3, &construct::able_empty,
                               &construct::done_nothing);
   STAGE(t_window_empty, 10);
-   TOOL(itm_saw, NULL);
+   TOOL(itm_hammer, itm_hatchet, itm_nailgun, NULL);
+   COMP(itm_2x4, 5, NULL);
+   COMP(itm_nail,20, NULL);
   STAGE(t_window, 5);
    COMP(itm_glass_sheet, 1, NULL);
 
- CONSTRUCT("Build Door", 4, &construct::able_wall_wood,
+ CONSTRUCT("Build Door", 4, &construct::able_empty,
                               &construct::done_nothing);
   STAGE(t_door_frame, 15);
-   TOOL(itm_saw, NULL);
+   TOOL(itm_hammer, itm_hatchet, itm_nailgun, NULL);
+   COMP(itm_2x4, 10, NULL);
+   COMP(itm_nail, 10, NULL);
   STAGE(t_door_b, 15);
    TOOL(itm_hammer, itm_hatchet, itm_nailgun, NULL);
    COMP(itm_2x4, 4, NULL);
@@ -124,7 +128,7 @@ void game::init_construction()
    COMP(itm_2x4, 5, itm_nail, 8, NULL);
 */
 
- CONSTRUCT("Build Roof", 4, &construct::able_between_walls,
+ CONSTRUCT("Build Roof", 4, &construct::able_cieling,
                             &construct::done_nothing);
   STAGE(t_floor, 40);
    TOOL(itm_hammer, itm_hatchet, itm_nailgun, NULL);
@@ -508,6 +512,16 @@ bool construct::able_wall_wood(game *g, point p)
  return (g->m.ter(p.x, p.y) == t_wall_wood);
 }
 
+bool construct::able_cieling(game *g, point p)
+{
+ return (g->m.ter(p.x + 1, p.y) == t_wall_wood || 
+g->m.ter(p.x -1, p.y) == t_wall_wood || g->m.ter(p.x, p.y +1) == t_wall_wood||
+g->m.ter(p.x, p.y -1) == t_wall_wood||
+g->m.ter(p.x +1, p.y) && g->m.ter(p.x, p.y +1) == t_floor ||
+g->m.ter(p.x -1, p.y) && g->m.ter(p.x, p.y -1) == t_floor ||
+g->m.ter(p.x -1, p.y) && g->m.ter(p.x, p.y +1) == t_floor ||
+g->m.ter(p.x +1, p.y) && g->m.ter(p.x, p.y -1) == t_floor);
+}
 bool construct::able_between_walls(game *g, point p)
 {
  bool fill[SEEX * MAPSIZE][SEEY * MAPSIZE];
@@ -536,10 +550,45 @@ bool will_flood_stop(map *m, bool fill[SEEX * MAPSIZE][SEEY * MAPSIZE],
   return false;
 
  fill[x][y] = true;
+<<<<<<< HEAD
+ bool skip_north = (fill[x][y - 1] || m->ter(x, y - 1) == t_wall_h ||
+                                      m->ter(x, y - 1) == t_wall_v ||
+                                      m->ter(x, y - 1) == t_wall_wood||
+                                      m->ter(x, y - 1) == t_door_c||
+                                      m->ter(x, y - 1) == t_door_o||
+                                      m->ter(x, y - 1) == t_door_frame||
+                                      m->ter(x, y - 1) == t_window_frame||
+                                      m->ter(x, y - 1) == t_window_empty),
+      skip_south = (fill[x][y + 1] || m->ter(x, y + 1) == t_wall_h ||
+                                      m->ter(x, y + 1) == t_wall_v ||
+                                      m->ter(x, y + 1) == t_wall_wood||
+                                      m->ter(x, y + 1) == t_door_c||
+                                      m->ter(x, y + 1) == t_door_o||
+                                      m->ter(x, y + 1) == t_door_frame||
+                                      m->ter(x, y + 1) == t_window_frame||
+                                      m->ter(x, y + 1) == t_window_empty),
+      skip_east  = (fill[x + 1][y] || m->ter(x + 1, y) == t_wall_h ||
+                                      m->ter(x + 1, y) == t_wall_v ||
+                                      m->ter(x + 1, y) == t_wall_wood||
+                                      m->ter(x + 1, y) == t_door_c||
+                                      m->ter(x + 1, y) == t_door_o||
+                                      m->ter(x + 1, y) == t_door_frame||
+                                      m->ter(x + 1, y) == t_window_frame||
+                                      m->ter(x + 1, y) == t_window_empty),
+      skip_west  = (fill[x - 1][y] || m->ter(x - 1, y) == t_wall_h ||
+                                      m->ter(x - 1, y) == t_wall_v ||
+                                      m->ter(x - 1, y) == t_wall_wood||
+                                      m->ter(x - 1, y) == t_door_c||
+                                      m->ter(x - 1, y) == t_door_o||
+                                      m->ter(x - 1, y) == t_door_frame||
+                                      m->ter(x - 1, y) == t_window_frame||
+                                      m->ter(x - 1, y) == t_window_empty);
+=======
  bool skip_north = (fill[x][y - 1] || m->has_flag(supports_roof, x, y - 1)),
       skip_south = (fill[x][y + 1] || m->has_flag(supports_roof, x, y + 1)),
       skip_east  = (fill[x + 1][y] || m->has_flag(supports_roof, x + 1, y)),
       skip_west  = (fill[x - 1][y] || m->has_flag(supports_roof, x - 1, y));
+>>>>>>> 93b374a1f313aee3eee353ea6a5d09d503f6d125
 
  return ((skip_north || will_flood_stop(m, fill, x    , y - 1)) &&
          (skip_east  || will_flood_stop(m, fill, x + 1, y    )) &&

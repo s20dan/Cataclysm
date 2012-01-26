@@ -738,10 +738,6 @@ MELEE("wrench",		30, 86, ';', c_ltgray,	IRON,	MNULL,
 An adjustable wrench.  Makes a decent melee weapon, and is used in many\n\
 mechanics crafting recipes.");
 
-MELEE("wood saw",	15, 40, ';', c_cyan,	IRON,	WOOD,
-	 7,  3, -6,  1, -2, 0, "\
-A flimsy saw, useful for cutting through wood objects.");
-
 MELEE("hack saw",	17, 65, ';', c_ltcyan,	IRON,	MNULL,
 	 4,  2,  1,  1, -1, 0, "\
 A sturdy saw, useful for cutting through metal objects.");
@@ -755,12 +751,6 @@ MELEE("hatchet",	10,  95,';', c_ltgray,	IRON,	WOOD,
 	 6,  7, 12, 12,  1, 0, "\
 A one-handed hatchet.  Makes a great melee weapon, and is useful both for\n\
 cutting wood, and for use as a hammer.");
-
-//    NAME		RAR PRC SYM COLOR	MAT1	MAT2
-MELEE("wood ax",	 8, 105,'/', c_ltgray,	WOOD,	IRON,
-//	VOL WGT DAM CUT HIT FLAGS
-	17, 15, 24, 18,  1, 0, "\
-A large two-handed axe.  Makes a good melee weapon, but is a bit slow.");
 
 MELEE("nail board",	 5,  80,'/', c_ltred,	WOOD,	MNULL,
 	 6,  6, 16,  6,  1, mfb(IF_STAB), "\
@@ -917,6 +907,14 @@ travels.");
 MELEE("USB drive",	 5, 100,',', c_white,	PLASTIC,MNULL,
 	  0,  0,  0,  0,  0, 0, "\
 A USB thumb drive.  Useful for holding software.");
+
+MELEE("log",             0, 100,'/', c_brown,   WOOD,   MNULL,
+         50,  40, 40, 0,  -20, 0, "\
+A log, like the thing trees are made of.");
+
+MELEE("splintered wood", 0, 0, '/',  c_brown,   WOOD,   MNULL,
+         4,   6,  7,  0,  -1,  0, "\
+Some splintered bits of wood, not much use as anything but firewood.");
 
 // ARMOR
 #define ARMOR(name,rarity,price,color,mat1,mat2,volume,wgt,dam,to_hit,\
@@ -3011,6 +3009,26 @@ A tool for drawing blood, including a vacuum-sealed test tube for holding the\n\
 sample.  Use this tool to draw blood, either from yourself or from a corpse\n\
 you are standing on.");
 
+TOOL("wood ax",	 60, 105,'/', c_ltgray,	WOOD,	IRON,
+     17, 15, 24, 18,  1,  0,  0,  0,  0, AT_NULL, itm_null, &iuse::axe,0, "\
+A good weapon for felling both trees and zombies\n\
+a bit on the slow side, however");
+
+TOOL("tent kit", 40, 400,';', c_green,  LEATHER, IRON,
+        30, 10, 1,  0,  -4,  0,  0,  0, 0, AT_NULL, itm_null, &iuse::tent,0,"\
+A tent, specially treated to resist environmental acids.");
+
+TOOL("wood saw", 60, 100,';', c_ltgray,   IRON,   PLASTIC,
+        12, 4,  0,  3,  -2,  0,  0,  0, 0, AT_NULL, itm_null, &iuse::saw,0,"\
+A flimsy saw, good for cutting up wooden objects.");
+
+TOOL("pickaxe",  60, 100,'/', c_brown,    STEEL,  MNULL,
+        20, 15, 10, 20, -3, 0, 0, 0, 0, AT_NULL, itm_null, &iuse::pickaxe,0,"\
+Pickaxes, an essential tool for the old school miner.");
+
+TOOL("spiked barricade", 0, 100,';', c_brown, WOOD, MNULL,
+        20, 10, 0,  0,  -20,0, 0, 0, 0, AT_NULL, itm_null, &iuse::barricade,0,"\
+A vicious spiked barricade");
 // BIONICS
 // These are the modules used to install new bionics in the player.  They're
 // very simple and straightforward; a difficulty, followed by a NULL-terminated

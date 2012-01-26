@@ -2046,7 +2046,171 @@ void iuse::vacutainer(game *g, player *p, item *it, bool t)
 
  it->put_in(blood);
 }
- 
+
+void iuse::axe(game *g, player *p, item *it, bool t)
+{
+ int dirx, diry;
+ g->draw();
+ mvprintw(0, 0, "Fell which tree?");
+ get_direction(dirx, diry, input());
+ if (dirx == -2) {
+  g->add_msg("Invalid direction.");
+  return;
+ }
+ dirx += p->posx;
+ diry += p->posy;
+ ter_id type = g->m.ter(dirx, diry);
+ if (type == t_tree) {
+  g->add_msg("You chop down the tree.");
+  g->sound(p->posx, p->posy, 50, "CRASH");
+   p->moves -= (10000 - (p->str_cur * 20));
+   g->m.ter(dirx, diry) = t_stump;
+    int logs = rng(2, 6);
+    item log(g->itypes[itm_log], 0, g->nextinv);
+    for (int i = 0; i < logs; i++)
+     g->m.add_item(dirx, diry, log);
+} else if (type == t_tree_young)
+ {
+  g->add_msg("A single swing and the sapling falls to the ground.");
+  g->sound(p->posx, p->posy, 5, "CHNK");
+  p->moves -= (100);
+  g->m.ter(dirx, diry) = t_dirt;
+   int sticks = rng(1, 3);
+   item stick(g->itypes[itm_stick], 0, g->nextinv);
+   for (int i = 0; i < sticks; i++)
+    g->m.add_item(dirx, diry, stick);
+} else if (type == t_stump)
+ {
+  g->add_msg("You hack the stump into splinters");
+  g->sound(p->posx, p->posy, 5, "THUNK, THUNK, THUNK");
+  p->moves -= (2000);
+  g->m.ter(dirx, diry) = t_dirt;
+   int splinters = rng(1, 3);
+   item splinter(g->itypes[itm_splinter], 0, g->nextinv);
+   for (int i = 0; i < splinters; i++)
+    g->m.add_item(dirx, diry, splinter);
+ }
+}
+
+void iuse::tent(game *g, player *p, item *it, bool t)
+{
+ int dirx, diry;
+ g->draw();
+ mvprintw(0, 0, "Pitch tent where");
+ get_direction(dirx, diry, input());
+ if (dirx == -2) {
+  g->add_msg("Invalid direction.");
+  return;
+ }
+ dirx += p->posx;
+ diry += p->posy;
+ ter_id type = g->m.ter(dirx, diry);
+ if (type == t_dirt|| type == t_grass) {
+  g->add_msg("You stake your tent into the ground");
+   p->moves -= (5000 - (p->sklevel[sk_survival] * 200));
+   g->m.ter(dirx, diry) = t_tent;
+   it->invlet = 0;
+ }
+}
+
+void iuse::saw(game *g, player *p, item *it, bool t)
+{
+ char ch = g->inv("Chop up what?");
+ item* cut = &(p->i_at(ch));
+ if (cut->type->id == 0) {
+  g->add_msg("You do not have that item!");
+  return;
+ }
+ if (cut->type->id == itm_log) {
+  p->moves -= 5000;
+  g->add_msg("You saw the log into planks.");
+  int planks = rng(8, 20);
+  item plank(g->itypes[itm_2x4], int(g->turn), g->nextinv);
+  p->i_rem(ch);
+  bool drop = false;
+  for (int i = 0; i < planks; i++) {
+   int iter = 0;
+   while (p->has_item(plank.invlet)) {
+    plank.invlet = g->nextinv;
+    g->advance_nextinv();
+    iter++;
+   }
+   if (!drop && (iter == 52 || p->volume_carried() >= p->volume_capacity()))
+    drop = true;
+   if (drop)
+    g->m.add_item(p->posx, p->posy, plank);
+   else
+    p->i_add(plank);
+  }} else {
+  g->add_msg("You can't cut that!");
+  }
+  return;
+}
+
+void iuse::pickaxe(game *g, player *p, item *it, bool t)
+{
+ int dirx, diry;
+ g->draw();
+ mvprintw(0, 0, "Mine where??");
+ get_direction(dirx, diry, input());
+ if (dirx == -2) {
+  g->add_msg("Invalid direction.");
+  return;
+ }
+ dirx += p->posx;
+ diry += p->posy;
+ ter_id type = g->m.ter(dirx, diry);
+ if (type == t_rock) {
+  g->add_msg("You mine into the wall.");
+  g->sound(p->posx, p->posy, 15, "CHINK! CHINK! CHINK!");
+   p->moves -= (10000 - (p->str_cur * 20));
+   g->m.ter(dirx, diry) = t_rock_floor;
+    int rocks = rng(1, 15);
+    item rock(g->itypes[itm_rock], 0, g->nextinv);
+    for (int i = 0; i < rocks; i++)
+     g->m.add_item(dirx, diry, rock);
+} else if (type == t_pavement || type == t_pavement_y || type == t_sidewalk)
+ {
+  g->add_msg("You smash up the road into stones");
+  g->sound(p->posx, p->posy, 5, "CHINK! CHINK!");
+  p->moves -= (5000);
+  g->m.ter(dirx, diry) = t_dirt;
+   int rocks = rng(2, 6);
+   item rock(g->itypes[itm_rock], 0, g->nextinv);
+   for (int i = 0; i < rocks; i++)
+    g->m.add_item(dirx, diry, rock);
+} else
+ {
+  g->add_msg("You can't mine that!");
+ }
+}
+
+void iuse::barricade(game *g, player *p, item *it, bool t)
+{
+ int dirx, diry;
+ g->draw();
+ mvprintw(0, 0, "Embed your barricade where?");
+ get_direction(dirx, diry, input());
+ if (dirx == -2) {
+  g->add_msg("Invalid direction.");
+  return;
+ }
+ dirx += p->posx;
+ diry += p->posy;
+ ter_id type = g->m.ter(dirx, diry);
+ if (!p->has_amount(itm_shovel, 1)) {
+  g->add_msg("You need a shovel to dig that in");
+ } else {
+ if (type == t_dirt|| type == t_grass) {
+  g->add_msg("You stake your barricade in");
+   p->moves -= (1000);
+   g->m.ter(dirx, diry) = t_spikebar;
+   it->invlet = 0;
+ } else {
+  g->add_msg("You can only place this in dirt or grass");
+  }
+ }
+}
 
 /* MACGUFFIN FUNCTIONS
  * These functions should refer to it->associated_mission for the particulars

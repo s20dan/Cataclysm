@@ -44,6 +44,7 @@ struct construct // Construction functions.
  bool able_wall  (game *, point); // Able if tile is wall
  bool able_wall_wood(game *g, point); // Only player-built walls
  bool able_between_walls(game *, point); // Flood-fill contained by walls
+ bool able_cieling(game *, point);
  bool able_dig(game *, point); // Able if diggable terrain
  bool able_pit(game *, point); // Able only on pits
 
