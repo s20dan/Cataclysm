@@ -522,17 +522,6 @@ g->m.ter(p.x -1, p.y) && g->m.ter(p.x, p.y -1) == t_floor ||
 g->m.ter(p.x -1, p.y) && g->m.ter(p.x, p.y +1) == t_floor ||
 g->m.ter(p.x +1, p.y) && g->m.ter(p.x, p.y -1) == t_floor);
 }
-bool construct::able_between_walls(game *g, point p)
-{
- bool fill[SEEX * MAPSIZE][SEEY * MAPSIZE];
- for (int x = 0; x < SEEX * MAPSIZE; x++) {
-  for (int y = 0; y < SEEY * MAPSIZE; y++)
-   fill[x][y] = false;
- }
-
- return (will_flood_stop(&(g->m), fill, p.x, p.y)); // See bottom of file
-}
-
 bool construct::able_dig(game *g, point p)
 {
  return (g->m.has_flag(diggable, p.x, p.y));
