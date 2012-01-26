@@ -543,59 +543,6 @@ bool construct::able_pit(game *g, point p)
  return (g->m.ter(p.x, p.y) == t_pit);//|| g->m.ter(p.x, p.y) == t_pit_shallow);
 }
 
-bool will_flood_stop(map *m, bool fill[SEEX * MAPSIZE][SEEY * MAPSIZE],
-                     int x, int y)
-{
- if (x == 0 || y == 0 || x == SEEX * MAPSIZE - 1 || y == SEEY * MAPSIZE - 1)
-  return false;
-
- fill[x][y] = true;
-<<<<<<< HEAD
- bool skip_north = (fill[x][y - 1] || m->ter(x, y - 1) == t_wall_h ||
-                                      m->ter(x, y - 1) == t_wall_v ||
-                                      m->ter(x, y - 1) == t_wall_wood||
-                                      m->ter(x, y - 1) == t_door_c||
-                                      m->ter(x, y - 1) == t_door_o||
-                                      m->ter(x, y - 1) == t_door_frame||
-                                      m->ter(x, y - 1) == t_window_frame||
-                                      m->ter(x, y - 1) == t_window_empty),
-      skip_south = (fill[x][y + 1] || m->ter(x, y + 1) == t_wall_h ||
-                                      m->ter(x, y + 1) == t_wall_v ||
-                                      m->ter(x, y + 1) == t_wall_wood||
-                                      m->ter(x, y + 1) == t_door_c||
-                                      m->ter(x, y + 1) == t_door_o||
-                                      m->ter(x, y + 1) == t_door_frame||
-                                      m->ter(x, y + 1) == t_window_frame||
-                                      m->ter(x, y + 1) == t_window_empty),
-      skip_east  = (fill[x + 1][y] || m->ter(x + 1, y) == t_wall_h ||
-                                      m->ter(x + 1, y) == t_wall_v ||
-                                      m->ter(x + 1, y) == t_wall_wood||
-                                      m->ter(x + 1, y) == t_door_c||
-                                      m->ter(x + 1, y) == t_door_o||
-                                      m->ter(x + 1, y) == t_door_frame||
-                                      m->ter(x + 1, y) == t_window_frame||
-                                      m->ter(x + 1, y) == t_window_empty),
-      skip_west  = (fill[x - 1][y] || m->ter(x - 1, y) == t_wall_h ||
-                                      m->ter(x - 1, y) == t_wall_v ||
-                                      m->ter(x - 1, y) == t_wall_wood||
-                                      m->ter(x - 1, y) == t_door_c||
-                                      m->ter(x - 1, y) == t_door_o||
-                                      m->ter(x - 1, y) == t_door_frame||
-                                      m->ter(x - 1, y) == t_window_frame||
-                                      m->ter(x - 1, y) == t_window_empty);
-=======
- bool skip_north = (fill[x][y - 1] || m->has_flag(supports_roof, x, y - 1)),
-      skip_south = (fill[x][y + 1] || m->has_flag(supports_roof, x, y + 1)),
-      skip_east  = (fill[x + 1][y] || m->has_flag(supports_roof, x + 1, y)),
-      skip_west  = (fill[x - 1][y] || m->has_flag(supports_roof, x - 1, y));
->>>>>>> 93b374a1f313aee3eee353ea6a5d09d503f6d125
-
- return ((skip_north || will_flood_stop(m, fill, x    , y - 1)) &&
-         (skip_east  || will_flood_stop(m, fill, x + 1, y    )) &&
-         (skip_south || will_flood_stop(m, fill, x    , y + 1)) &&
-         (skip_west  || will_flood_stop(m, fill, x - 1, y    ))   );
-}
-
 void construct::done_pit(game *g, point p)
 {
  if (g->m.ter(p.x, p.y) == t_pit)
