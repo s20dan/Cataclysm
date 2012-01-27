@@ -3639,6 +3639,20 @@ void game::examine()
    u.moves -= 300;
    handle_liquid(gas, false, true);
   }
+ } else if (m.ter(examx, examy) == t_groundsheet && query_yn("Take down tent?")) {
+   add_msg("You take down your tent.");
+  item tent(itypes[itm_tent], turn);
+   m.ter(examx, examy) = t_dirt;
+   m.ter(examx +1, examy) = t_dirt;
+   m.ter(examx -1, examy) = t_dirt;
+   m.ter(examx -1, examy +1) = t_dirt;
+   m.ter(examx +1, examy -1) = t_dirt;
+   m.ter(examx -1, examy -1) = t_dirt;
+   m.ter(examx +1, examy +1) = t_dirt;
+   m.ter(examx, examy +1) = t_dirt;
+   m.ter(examx, examy -1) = t_dirt;
+   u.moves -= 1000;
+   m.add_item(examx, examy, tent);
  } else if (m.ter(examx, examy) == t_slot_machine) {
   if (u.cash < 10)
    add_msg("You need $10 to play.");
