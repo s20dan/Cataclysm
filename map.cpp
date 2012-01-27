@@ -264,6 +264,8 @@ bool map::bash(int x, int y, int str, std::string &sound)
   }
   break;
  case t_paper:
+ case t_tent:
+ case t_flap_c:
   if (str >= dice(2, 6) - 2) {
    sound += "rrrrip!";
    ter(x, y) = t_dirt;
@@ -656,6 +658,9 @@ bool map::open_door(int x, int y, bool inside)
             (ter(x, y) == t_door_locked || ter(x, y) == t_door_locked_alarm)) {
   ter(x, y) = t_door_o;
   return true;
+ } else if (ter(x, y) == t_flap_c) {
+  ter(x, y) = t_flap_o;
+  return true;
  }
  return false;
 }
@@ -685,6 +690,9 @@ bool map::close_door(int x, int y)
   return true;
  } else if (ter(x, y) == t_door_glass_o) {
   ter(x, y) = t_door_glass_c;
+  return true;
+ } else if (ter(x, y) == t_flap_o) {
+  ter(x, y) = t_flap_c;
   return true;
  }
  return false;

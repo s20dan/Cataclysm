@@ -57,6 +57,10 @@ void game::init_construction()
   STAGE(t_dirt, 5);
    TOOL(itm_shovel, NULL);
 
+ CONSTRUCT("Build Firepit", 0, &construct::able_dig, &construct::done_campfire);
+  STAGE(t_campfire, 5);
+  COMP(itm_rock, 5, NULL);
+
  CONSTRUCT("Clean Broken Window", 0, &construct::able_broken_window,
                                      &construct::done_nothing);
   STAGE(t_window_empty, 5);
@@ -517,10 +521,12 @@ bool construct::able_cieling(game *g, point p)
  return (g->m.ter(p.x + 1, p.y) == t_wall_wood || 
 g->m.ter(p.x -1, p.y) == t_wall_wood || g->m.ter(p.x, p.y +1) == t_wall_wood||
 g->m.ter(p.x, p.y -1) == t_wall_wood||
-g->m.ter(p.x +1, p.y) && g->m.ter(p.x, p.y +1) == t_floor ||
-g->m.ter(p.x -1, p.y) && g->m.ter(p.x, p.y -1) == t_floor ||
-g->m.ter(p.x -1, p.y) && g->m.ter(p.x, p.y +1) == t_floor ||
-g->m.ter(p.x +1, p.y) && g->m.ter(p.x, p.y -1) == t_floor);
+g->m.ter(p.x +1, p.y) == t_floor && g->m.ter(p.x, p.y +1) == t_floor ||
+g->m.ter(p.x -1, p.y) == t_floor && g->m.ter(p.x, p.y -1) == t_floor ||
+g->m.ter(p.x -1, p.y) == t_floor && g->m.ter(p.x, p.y +1) == t_floor ||
+g->m.ter(p.x +1, p.y) == t_floor && g->m.ter(p.x, p.y -1) == t_floor ||
+g->m.ter(p.x +1, p.y) == t_floor && g->m.ter(p.x -1, p.y) == t_floor ||
+g->m.ter(p.x, p.y +1) == t_floor && g->m.ter(p.x, p.y -1) == t_floor);
 }
 bool construct::able_dig(game *g, point p)
 {
@@ -553,4 +559,9 @@ void construct::done_fill_pit(game *g, point p)
 void construct::done_window_pane(game *g, point p)
 {
  g->m.add_item(g->u.posx, g->u.posy, g->itypes[itm_glass_sheet], 0);
+}
+
+void construct::done_campfire(game *g, point p)
+{
+ g->m.ter(p.x, p.y) == t_campfire;
 }

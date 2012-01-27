@@ -53,5 +53,5 @@ struct construct // Construction functions.
  void done_trap_pit(game *, point);
  void done_fill_pit(game *, point);
  void done_window_pane(game *, point);
-
+ void done_campfire(game *, point);
 };

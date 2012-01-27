@@ -2104,11 +2104,26 @@ void iuse::tent(game *g, player *p, item *it, bool t)
  }
  dirx += p->posx;
  diry += p->posy;
- ter_id type = g->m.ter(dirx, diry);
- if (type == t_dirt|| type == t_grass) {
+ if (g->m.has_flag(diggable, dirx, diry) &&
+     g->m.has_flag(diggable, dirx +1, diry)    &&
+     g->m.has_flag(diggable, dirx -1, diry)    &&
+     g->m.has_flag(diggable, dirx +1, diry +1) &&
+     g->m.has_flag(diggable, dirx +1, diry +2) &&
+     g->m.has_flag(diggable, dirx, diry +2)    &&
+     g->m.has_flag(diggable, dirx -1, diry +2) &&
+     g->m.has_flag(diggable, dirx -1, diry +1) &&
+     g->m.has_flag(diggable, dirx, diry +1)) {
   g->add_msg("You stake your tent into the ground");
    p->moves -= (5000 - (p->sklevel[sk_survival] * 200));
-   g->m.ter(dirx, diry) = t_tent;
+   g->m.ter(dirx, diry) = t_flap_c;
+   g->m.ter(dirx +1, diry) = t_tent;
+   g->m.ter(dirx -1, diry) = t_tent;
+   g->m.ter(dirx +1, diry +1) = t_flap_c;
+   g->m.ter(dirx +1, diry +2) = t_tent;
+   g->m.ter(dirx, diry +2) = t_flap_c;
+   g->m.ter(dirx -1, diry +2) = t_tent;
+   g->m.ter(dirx -1, diry +1) = t_flap_c;
+   g->m.ter(dirx, diry +1) = t_groundsheet;
    it->invlet = 0;
  }
 }
