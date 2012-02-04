@@ -101,6 +101,19 @@ void game::init_construction()
    COMP(itm_2x4, 6, NULL);
    COMP(itm_nail, 20, NULL);
 
+ CONSTRUCT("Build Palisade", 3, &construct::able_empty, &construct::done_nothing);
+  STAGE(t_palisade, 10);
+   TOOL(itm_hammer, itm_hatchet, NULL);
+   COMP(itm_log, 2, NULL);
+   COMP(itm_nail, 20, itm_stake, 4, NULL);
+
+ CONSTRUCT("Build Palisade Gate", 3, &construct::able_empty, &construct::done_nothing);
+  STAGE(t_palgate_c, 10);
+  TOOL(itm_hammer, itm_hatchet, NULL);
+  COMP(itm_log, 2, NULL);
+  COMP(itm_nail, 20, itm_stake, 4, NULL);
+  COMP(itm_rope_6, 1, itm_crossbar, 1, NULL);
+
  CONSTRUCT("Build Window", 3, &construct::able_empty,
                               &construct::done_nothing);
   STAGE(t_window_empty, 10);
@@ -316,6 +329,7 @@ void game::construction_menu()
   }
  } while (ch != 'q' && ch != 'Q' && ch != KEY_ESCAPE);
  refresh_all();
+ wrefresh(w_con);
 }
 
 bool game::player_can_build(player &p, inventory inv, constructable con,
@@ -530,7 +544,8 @@ g->m.ter(p.x, p.y +1) == t_floor && g->m.ter(p.x, p.y -1) == t_floor);
 }
 bool construct::able_dig(game *g, point p)
 {
- return (g->m.has_flag(diggable, p.x, p.y));
+ return (g->m.has_flag(diggable, p.x, p.y)||g->m.ter(p.x, p.y) == t_pit_shallow
+ || g->m.ter(p.x, p.y) == t_pit);
 }
 
 bool construct::able_pit(game *g, point p)

@@ -52,7 +52,7 @@ recipes.push_back( recipe(id, result, category, skill1, skill2, difficulty, \
        itm_knife_combat, -1, itm_machete, -1, itm_toolset, -1, NULL);
   COMP(itm_stick, 1, itm_broom, 1, itm_mop, 1, itm_2x4, 1, itm_bee_sting, 1,
        NULL);
-                                 
+
  RECIPE(itm_nailboard, CC_WEAPON, sk_null, sk_null, 0, 1000);
   TOOL(itm_hatchet, -1, itm_hammer, -1, itm_rock, -1, itm_toolset, -1, NULL);
   COMP(itm_2x4, 1, itm_bat, 1, NULL);
@@ -548,6 +548,15 @@ RECIPE(itm_c4, CC_WEAPON, sk_mechanics, sk_electronics, 4, 8000);
   COMP(itm_2x4, 3, NULL);
   COMP(itm_spear_wood, 5, NULL);
   COMP(itm_nail, 5, NULL);
+
+ RECIPE(itm_stake,     CC_MISC, sk_null, sk_null, 0, 1000);
+  TOOL(itm_hatchet, -1, itm_hammer, -1, itm_rock, -1, NULL);
+  COMP(itm_rock, 1);
+
+ RECIPE(itm_crossbar,  CC_MISC, sk_null, sk_null, 0, 1000);
+  TOOL(itm_hatchet, -1, itm_hammer, -1, itm_rock, -1, NULL);
+  COMP(itm_2x4, 6, itm_log, 1, NULL);
+  COMP(itm_nail, 8, itm_stake, 1, NULL);
 
  RECIPE(itm_superglue, CC_MISC, sk_cooking, sk_null, 2, 12000);
   TOOL(itm_hotplate, 5, itm_toolset, 3, itm_fire, -1, NULL);

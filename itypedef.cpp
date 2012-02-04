@@ -916,6 +916,14 @@ MELEE("splintered wood", 0, 0, '/',  c_brown,   WOOD,   MNULL,
          4,   6,  7,  0,  -1,  0, "\
 Some splintered bits of wood, not much use as anything but firewood.");
 
+MELEE("stone stake",     0, 0, ',',  c_ltgray,  STONE,  MNULL,
+         1,   1,  0,  7,  0,   0, "\
+A stone, hammered into a rough stake. Handy when nails are scarce.");
+
+MELEE("crossbar",        0, 0, '/',  c_brown,   WOOD,   MNULL,
+         10,  10, 9,  0,  -1,  0, "\
+A hefty wooden crossbar, it can be used to hold a large\n\
+gate closed.");
 // ARMOR
 #define ARMOR(name,rarity,price,color,mat1,mat2,volume,wgt,dam,to_hit,\
 encumber,dmg_resist,cut_resist,env,warmth,storage,covers,des)\

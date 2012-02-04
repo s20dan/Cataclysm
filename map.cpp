@@ -201,6 +201,20 @@ bool map::bash(int x, int y, int str, std::string &sound)
    return true;
   }
   break;
+ case t_palisade:
+ case t_palgate_c:
+  if (!(one_in(20)) && (str >= rng(0, 120))) {
+   sound += "crash!";
+   ter(x, y) = t_dirt;
+   int num_logs = rng(1, 2);
+   for (int i = 0; i < num_logs; i++)
+    add_item(x, y, (*itypes)[itm_log], 0);
+   return true;
+  } else {
+   sound += "whump!";
+   return true;
+  }
+  break;
  case t_door_c:
  case t_door_locked:
  case t_door_locked_alarm:
@@ -661,6 +675,9 @@ bool map::open_door(int x, int y, bool inside)
  } else if (ter(x, y) == t_flap_c) {
   ter(x, y) = t_flap_o;
   return true;
+ } else if (ter(x, y) == t_palgate_c) {
+  ter(x, y) = t_palgate_o;
+  return true;
  }
  return false;
 }
@@ -693,6 +710,9 @@ bool map::close_door(int x, int y)
   return true;
  } else if (ter(x, y) == t_flap_o) {
   ter(x, y) = t_flap_c;
+  return true;
+ } else if (ter(x, y) == t_palgate_o) {
+  ter(x, y) = t_palgate_c;
   return true;
  }
  return false;
