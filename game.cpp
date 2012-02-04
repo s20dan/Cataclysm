@@ -3653,6 +3653,36 @@ void game::examine()
    m.ter(examx, examy -1) = t_dirt;
    u.moves -= 1000;
    m.add_item(examx, examy, tent);
+ } else if (m.ter(examx, examy) == t_pit && query_yn("Place a 2x4 over that pit?")) {
+  if (u.has_amount(itm_2x4, 1)) {
+   m.ter(examx, examy) = t_pit_bridge;
+   u.use_amount(itm_2x4, 1);
+   u.moves -= 100;
+   m.tr_at(examx, examy) = tr_null;
+   } else {
+  add_msg("You need a 2x4");
+  }
+ } else if (m.ter(examx, examy) == t_pit_spiked && query_yn("Place a 2x4 over that pit?")) {
+  if (u.has_amount(itm_2x4, 1)) {
+   m.ter(examx, examy) = t_s_pit_bridge;
+   u.use_amount(itm_2x4, 1);
+   u.moves -= 100;
+   m.tr_at(examx, examy) = tr_null;
+   } else {
+  add_msg("You need a 2x4");
+  }
+ } else if (m.ter(examx, examy) == t_pit_bridge && query_yn("Remove that 2x4?")) {
+  item board(itypes[itm_2x4], turn);
+   m.ter(examx, examy) = t_pit;
+   m.add_trap(examx, examy, tr_pit);
+   m.add_item(u.posx, u.posy, board);
+   u.moves -= 100;
+ } else if (m.ter(examx, examy) == t_s_pit_bridge && query_yn("Remove that 2x4?")) {
+  item board(itypes[itm_2x4], turn);
+   m.ter(examx, examy) = t_pit_spiked;
+   m.add_trap(examx, examy, tr_spike_pit);
+   m.add_item(u.posx, u.posy, board);
+   u.moves -= 100;
  } else if (m.ter(examx, examy) == t_slot_machine) {
   if (u.cash < 10)
    add_msg("You need $10 to play.");
