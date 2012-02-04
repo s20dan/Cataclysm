@@ -3037,6 +3037,12 @@ Pickaxes, an essential tool for the old school miner.");
 TOOL("spiked barricade", 0, 100,';', c_brown, WOOD, MNULL,
         20, 10, 0,  0,  -20,0, 0, 0, 0, AT_NULL, itm_null, &iuse::barricade,0,"\
 A vicious spiked barricade");
+
+TOOL("deployable awning", 40, 400,';', c_green,  LEATHER, IRON,
+        30, 10, 1,  0,  -4,  0,  0,  0, 0, AT_NULL, itm_null, &iuse::awning,0,"\
+It unpacks into a relatively large awning, perfect\n\
+for a spot of tea on a rainy day.");
+
 // BIONICS
 // These are the modules used to install new bionics in the player.  They're
 // very simple and straightforward; a difficulty, followed by a NULL-terminated

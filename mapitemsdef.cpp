@@ -195,7 +195,7 @@ void game::init_mapitems()
 	itm_manual_first_aid, itm_manual_traps, itm_lighter, itm_sewing_kit,
 	itm_hammer, itm_flashlight, itm_water_purifier, itm_radio, itm_beartrap,
         itm_UPS_off, itm_string_36, itm_longbow, itm_compbow, itm_arrow_wood,
-        itm_arrow_cf, itm_tent, NULL);
+        itm_arrow_cf, itm_tent, itm_awning, NULL);
 
  setvector(
    mapitems[mi_allsporting],
@@ -541,7 +541,7 @@ void game::init_mapitems()
 	itm_bottle_plastic, itm_lighter, itm_sewing_kit, itm_extinguisher,
 	itm_flashlight, itm_crowbar, itm_chainsaw_off, itm_beartrap,
 	itm_grenade, itm_EMPbomb, itm_hotplate, itm_UPS_off, itm_ax,
-        itm_tent,  NULL);
+        itm_tent, itm_awning,  NULL);
 
  setvector(
    mapitems[mi_sewage_plant],

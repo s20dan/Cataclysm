@@ -3653,6 +3653,20 @@ void game::examine()
    m.ter(examx, examy -1) = t_dirt;
    u.moves -= 1000;
    m.add_item(examx, examy, tent);
+ } else if (m.ter(examx, examy) == t_awnsheet && query_yn("Take down awning?")) {
+   add_msg("You disassemble the awning.");
+  item awning(itypes[itm_awning], turn);
+   m.ter(examx, examy) = t_dirt;
+   m.ter(examx +1, examy) = t_dirt;
+   m.ter(examx -1, examy) = t_dirt;
+   m.ter(examx -1, examy +1) = t_dirt;
+   m.ter(examx +1, examy -1) = t_dirt;
+   m.ter(examx -1, examy -1) = t_dirt;
+   m.ter(examx +1, examy +1) = t_dirt;
+   m.ter(examx, examy +1) = t_dirt;
+   m.ter(examx, examy -1) = t_dirt;
+   u.moves -= 1000;
+   m.add_item(examx, examy, awning);
  } else if (m.ter(examx, examy) == t_pit && query_yn("Place a 2x4 over that pit?")) {
   if (u.has_amount(itm_2x4, 1)) {
    m.ter(examx, examy) = t_pit_bridge;

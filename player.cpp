@@ -3929,6 +3929,8 @@ bool player::can_sleep(game *g)
   sleepy += 5;
  else if (g->m.ter(posx, posy) == t_floor)
   sleepy += 1;
+ else if (g->m.ter(posx, posy) == t_groundsheet)
+  sleepy += 1;
  else
   sleepy -= g->m.move_cost(posx, posy);
  if (fatigue < 192)

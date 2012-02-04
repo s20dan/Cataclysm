@@ -135,7 +135,11 @@ bool map::is_outside(int x, int y)
          ter(x    , y + 1) != t_floor_wax &&
          ter(x + 1, y - 1) != t_floor_wax &&
          ter(x + 1, y    ) != t_floor_wax &&
-         ter(x + 1, y + 1) != t_floor_wax   );
+         ter(x + 1, y + 1) != t_floor_wax &&
+         ter(x, y        ) != t_groundsheet &&
+         ter(x, y        ) != t_awnsheet  &&
+         ter(x, y        ) != t_awnfloor  &&
+         ter(x, y        ) != t_support);
 }
 
 bool map::flammable_items_at(int x, int y)

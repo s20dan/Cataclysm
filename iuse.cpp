@@ -2128,6 +2128,42 @@ void iuse::tent(game *g, player *p, item *it, bool t)
  }
 }
 
+void iuse::awning(game *g, player *p, item *it, bool t)
+{
+ int dirx, diry;
+ g->draw();
+ mvprintw(0, 0, "Deploy where?");
+ get_direction(dirx, diry, input());
+ if (dirx == -2) {
+  g->add_msg("Invalid direction.");
+  return;
+ }
+ dirx += p->posx;
+ diry += p->posy;
+ if (g->m.has_flag(diggable, dirx, diry) &&
+     g->m.has_flag(diggable, dirx +1, diry)    &&
+     g->m.has_flag(diggable, dirx -1, diry)    &&
+     g->m.has_flag(diggable, dirx +1, diry +1) &&
+     g->m.has_flag(diggable, dirx +1, diry +2) &&
+     g->m.has_flag(diggable, dirx, diry +2)    &&
+     g->m.has_flag(diggable, dirx -1, diry +2) &&
+     g->m.has_flag(diggable, dirx -1, diry +1) &&
+     g->m.has_flag(diggable, dirx, diry +1)) {
+  g->add_msg("You set up the awning");
+   p->moves -= (5000 - (p->sklevel[sk_survival] * 200));
+   g->m.ter(dirx, diry) = t_awnfloor;
+   g->m.ter(dirx +1, diry) = t_support;
+   g->m.ter(dirx -1, diry) = t_support;
+   g->m.ter(dirx +1, diry +1) = t_awnfloor;
+   g->m.ter(dirx +1, diry +2) = t_support;
+   g->m.ter(dirx, diry +2) = t_awnfloor;
+   g->m.ter(dirx -1, diry +2) = t_support;
+   g->m.ter(dirx -1, diry +1) = t_awnfloor;
+   g->m.ter(dirx, diry +1) = t_awnsheet;
+   it->invlet = 0;
+ }
+}
+
 void iuse::saw(game *g, player *p, item *it, bool t)
 {
  char ch = g->inv("Chop up what?");
