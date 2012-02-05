@@ -2164,6 +2164,33 @@ void iuse::awning(game *g, player *p, item *it, bool t)
  }
 }
 
+void iuse::fish(game *g, player *p, item *it, bool t)
+{
+ int dirx, diry;
+ g->draw();
+ mvprintw(0, 0, "Fish where?");
+ get_direction(dirx, diry, input());
+ if (dirx == -2) {
+  g->add_msg("Invalid direction.");
+  return;
+ }
+ dirx += p->posx;
+ diry += p->posy;
+ ter_id type = g->m.ter(dirx, diry);
+ if (type == t_water_dp) {
+  g->add_msg("You spit in the water and begin to angle.");
+   p->moves -= rng(1000, 15000);
+ if (one_in(30) - p->sklevel[sk_survival]) {
+   int fish = rng(1, 3);
+   item fishies(g->itypes[itm_fish], 0, g->nextinv);
+   for (int i = 0; i < fish; i++)
+    g->m.add_item(p->posx, p->posy, fishies);
+    g->add_msg("You catch some fish!");
+ } else {
+  g->add_msg("Nothing!");
+  }
+ }
+}
 void iuse::saw(game *g, player *p, item *it, bool t)
 {
  char ch = g->inv("Chop up what?");

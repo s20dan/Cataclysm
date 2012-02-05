@@ -103,7 +103,8 @@ class iuse
   void saw              (game *g, player *p, item *it, bool t);
   void pickaxe          (game *g, player *p, item *it, bool t);
   void barricade        (game *g, player *p, item *it, bool t);
-  void awning        (game *g, player *p, item *it, bool t);
+  void awning           (game *g, player *p, item *it, bool t);
+  void fish             (game *g, player *p, item *it, bool t);
 // MACGUFFINS
   void mcg_note		(game *g, player *p, item *it, bool t);
 // ARTIFACTS

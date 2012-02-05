@@ -443,6 +443,12 @@ FOOD("coffee powder",	15, 13,	c_brown,	VEGGY,	itm_bag_plastic,
 Ground coffee beans. You can boil it into a mediocre stimulant,\n\
 or swallow it raw for a lesser stimulative boost.");
 
+//   NAME		RAR PRC	COLOR		MAT1	CONTAINER
+FOOD("fish",	50, 50,	c_red,		FLESH,  itm_null,
+// VOL WGT QUE NUT SPO STM HTH ADD CHG FUN	 use_func    addiction type
+    1,  2,  2,  7, 12,  0, -1,  0,  1,-10,	&iuse::none, ADD_NULL, "\
+Freshly caught fish, you could eat it raw, but cooking it is better.");
+
 // MEDS
 #define MED(name,rarity,price,color,tool,mat,stim,healthy,addict,\
 charges,fun,use_func,addict_func,des) \
@@ -3042,6 +3048,10 @@ TOOL("deployable awning", 40, 400,';', c_green,  LEATHER, IRON,
         30, 10, 1,  0,  -4,  0,  0,  0, 0, AT_NULL, itm_null, &iuse::awning,0,"\
 It unpacks into a relatively large awning, perfect\n\
 for a spot of tea on a rainy day.");
+
+TOOL("composite fishing rod", 20, 1000,';', c_brown,  PLASTIC, IRON,
+        6, 4, 1,  0,  -4,  0,  0,  0, 0, AT_NULL, itm_null, &iuse::fish,0,"\
+An expensive fishing rod, perfect for the aspiring angler");
 
 // BIONICS
 // These are the modules used to install new bionics in the player.  They're
