@@ -549,6 +549,12 @@ RECIPE(itm_c4, CC_WEAPON, sk_mechanics, sk_electronics, 4, 8000);
   COMP(itm_spear_wood, 5, NULL);
   COMP(itm_nail, 5, NULL);
 
+ RECIPE(itm_electricfence, CC_MISC, sk_electronics, sk_null, 1, 1000);
+  COMP(itm_nail, 4, NULL);
+  COMP(itm_wire, 2, NULL);
+  COMP(itm_carbattery, 1, NULL);
+  COMP(itm_spear_wood, 2, NULL);
+
  RECIPE(itm_stake,     CC_MISC, sk_null, sk_null, 0, 1000);
   TOOL(itm_hatchet, -1, itm_hammer, -1, itm_rock, -1, NULL);
   COMP(itm_rock, 1);

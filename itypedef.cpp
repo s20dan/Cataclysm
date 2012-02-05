@@ -930,6 +930,18 @@ MELEE("crossbar",        0, 0, '/',  c_brown,   WOOD,   MNULL,
          10,  10, 9,  0,  -1,  0, "\
 A hefty wooden crossbar, it can be used to hold a large\n\
 gate closed.");
+
+MELEE("hand of god",     0, 0, ';',  c_cyan,    STEEL,  IRON,
+         0,    0, 100, 100, 100, 0,"\
+Zombie goasts leave this place!");
+
+MELEE("car battery",     50, 100, ';', c_ltred, IRON,   MNULL,
+         3,    4, 0,  5, -2, 0, "\
+A car battery, tons of uses for it.");
+
+MELEE("wire",            70, 100, ';', c_ltgray, IRON, MNULL,
+         5, 2,    0,  2, -1, 0, "\
+A length of tough wire, could be handy for crafting.");
 // ARMOR
 #define ARMOR(name,rarity,price,color,mat1,mat2,volume,wgt,dam,to_hit,\
 encumber,dmg_resist,cut_resist,env,warmth,storage,covers,des)\
@@ -3053,6 +3065,9 @@ TOOL("composite fishing rod", 20, 1000,';', c_brown,  PLASTIC, IRON,
         6, 4, 1,  0,  -4,  0,  0,  0, 0, AT_NULL, itm_null, &iuse::fish,0,"\
 An expensive fishing rod, perfect for the aspiring angler");
 
+TOOL("electric fence",        0, 1000,';',  c_cyan,   STEEL, MNULL,
+        10,10,0, 4,   -5,  0,  0,  0, 0, AT_NULL, itm_null, &iuse::efence,0,"\
+An electric fence, stake it into the ground and stand well back.");
 // BIONICS
 // These are the modules used to install new bionics in the player.  They're
 // very simple and straightforward; a difficulty, followed by a NULL-terminated

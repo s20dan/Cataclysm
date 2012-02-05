@@ -5256,6 +5256,11 @@ void game::plmove(int x, int y)
     u.hit(this, bp_torso, 0, 0, rng(10, 20));
    }
   }
+  if (m.has_flag(electric, x, y)) {
+    add_msg("The %s electrocutes you!", m.tername(x, y).c_str());
+    u.hit(this, bp_torso, 0, 0, rng(10, 20));
+    u.moves -= 400;
+   }
   if (!u.has_artifact_with(AEP_STEALTH) && !u.has_trait(PF_LEG_TENTACLES)) {
    if (u.has_trait(PF_LIGHTSTEP))
     sound(x, y, 2, "");	// Sound of footsteps may awaken nearby monsters

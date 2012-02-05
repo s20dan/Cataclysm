@@ -26,7 +26,7 @@ void game::init_mapitems()
 
  setvector(
    mapitems[mi_road],
-	itm_muffler, itm_pipe, itm_motor, NULL);
+	itm_muffler, itm_pipe, itm_motor, itm_carbattery, NULL);
 
  setvector(
    mapitems[mi_livingroom],
@@ -152,7 +152,7 @@ void game::init_mapitems()
  setvector(
    mapitems[mi_hardware],
 	itm_superglue, itm_chain, itm_rope_6, itm_rope_30, itm_glass_sheet,
-	itm_pipe, itm_nail, itm_hose, itm_string_36, NULL);
+	itm_pipe, itm_nail, itm_hose, itm_string_36, itm_wire, NULL);
 
  setvector(
    mapitems[mi_tools],
@@ -456,7 +456,8 @@ void game::init_mapitems()
 	itm_antenna, itm_motor, itm_screwdriver, itm_mask_dust,
 	itm_glasses_safety, itm_goggles_welding, itm_battery, itm_plut_cell,
 	itm_manual_electronics, itm_textbook_electronics, itm_soldering_iron,
-	itm_hotplate, itm_UPS_off, itm_usb_drive, itm_software_useless, NULL);
+	itm_hotplate, itm_UPS_off, itm_usb_drive, itm_software_useless,
+        itm_carbattery, NULL);
 
  setvector(
    mapitems[mi_monparts],

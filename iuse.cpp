@@ -2290,6 +2290,29 @@ void iuse::barricade(game *g, player *p, item *it, bool t)
  }
 }
 
+void iuse::efence(game *g, player *p, item *it, bool t)
+{
+ int dirx, diry;
+ g->draw();
+ mvprintw(0, 0, "Embed your fence where?");
+ get_direction(dirx, diry, input());
+ if (dirx == -2) {
+  g->add_msg("Invalid direction.");
+  return;
+ }
+ dirx += p->posx;
+ diry += p->posy;
+ ter_id type = g->m.ter(dirx, diry);
+ if (type == t_dirt|| type == t_grass) {
+  g->add_msg("You stake your fence in and wire it up");
+   p->moves -= (1000);
+   g->m.ter(dirx, diry) = t_fence_electric;
+   it->invlet = 0;
+ } else {
+  g->add_msg("You can only place this in dirt or grass");
+ }
+}
+
 /* MACGUFFIN FUNCTIONS
  * These functions should refer to it->associated_mission for the particulars
  */

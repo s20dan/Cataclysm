@@ -42,6 +42,7 @@ enum t_flag {
  swimmable,    // You (and monsters) swim here
  sharp,	       // May do minor damage to players/monsters passing it
  razor,        // Sharp, turned up to 11
+ electric,     // Same damage as razor, and locks player in place for 8 turns.
  rough,        // May hurt the player's feet
  sealed,       // Can't 'e' to retrieve items here
  noitem,       // Items "fall off" this space
@@ -68,7 +69,7 @@ t_hole,	// Real nothingness; makes you fall a z-level
 t_dirt, t_dirtmound, t_pit_shallow, t_pit, t_pit_spiked, t_pit_bridge, t_s_pit_bridge,
 t_rock_floor, t_rubble, t_ash, t_wreckage, t_b_metal,
 t_grass, t_tent, t_flap_c, t_flap_o, t_groundsheet, t_campfire, t_awnsheet,
-t_awnfloor, t_support,
+t_awnfloor, t_support, t_fence_electric,
 t_metal_floor,
 t_pavement, t_pavement_y, t_sidewalk,
 t_floor,
@@ -160,7 +161,7 @@ const ter_t terlist[num_terrain_types] = {  // MUST match enum ter_id above!
         mfb(transparent)|mfb(diggable)},
 {"metal wreckage",   '#', c_cyan,    5,
 	mfb(transparent)|mfb(rough)|mfb(sharp)|mfb(container)},
-{"twisted metal",    '#', c_ltgray,  4,
+{"twisted metal",    '#', c_ltcyan,  4,
         mfb(transparent)|mfb(sharp)|mfb(container)},
 {"grass",	     '.', c_green,   2,
 	mfb(transparent)|mfb(diggable)},
@@ -174,12 +175,14 @@ const ter_t terlist[num_terrain_types] = {  // MUST match enum ter_id above!
         mfb(inflammable)|mfb(transparent)},
 {"firepit",         '0', c_ltgray,  2,
         mfb(container)|mfb(transparent)},
-{"canvas floor",      ',', c_green,   2,
+{"canvas floor",     ',', c_green,   2,
         mfb(inflammable)|mfb(transparent)},
-{"canvas floor",      '.', c_green,   2,
+{"canvas floor",     '.', c_green,   2,
         mfb(inflammable)|mfb(transparent)},
-{"support",           'o', c_green,   2,
+{"support",          'o', c_green,   2,
         mfb(inflammable)|mfb(transparent)},
+{"electric fence",   '^', c_cyan,    4,
+        mfb(electric)|mfb(transparent)}, 
 {"metal floor",      '.', c_ltcyan,  2,
 	mfb(transparent)},
 {"pavement",	     '.', c_dkgray,  2,
