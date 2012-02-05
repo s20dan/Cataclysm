@@ -3639,8 +3639,6 @@ void game::examine()
    u.moves -= 300;
    handle_liquid(gas, false, true);
   }
- } else if (m.ter(examx, examy) == t_floor) {
-   m.ter(examx, examy) = t_wreckage;
  } else if (m.ter(examx, examy) == t_wreckage &&
             query_yn("Sift through the wreckage?")) {
   add_msg("You look for anything useful");
