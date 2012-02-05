@@ -195,7 +195,7 @@ void game::construction_menu()
   }
 
   if (update_info) {
-   update_info = false;
+   update_info = true;
    constructable current_con = constructions[select];
 // Print difficulty
    int pskill = u.sklevel[sk_carpentry], diff = current_con.difficulty;

@@ -84,6 +84,7 @@ enum oter_id {
  ot_mil_surplus_north, ot_mil_surplus_east, ot_mil_surplus_south,
   ot_mil_surplus_west,
  ot_megastore_entrance, ot_megastore,
+ ot_museum_entrance,    ot_museum,
  ot_hospital_entrance, ot_hospital,
 // Goodies/dungeons
  ot_shelter, ot_shelter_under,
@@ -246,6 +247,8 @@ const oter_t oterlist[num_ter_types] = {
 {"mil. surplus",	'<',	c_white,	5, building_extras, false, false},
 {"megastore",		'M',	c_ltblue,	5, building_extras, false, false},
 {"megastore",		'M',	c_blue,		5, building_extras, false, false},
+{"museum",		'm',	c_ltgreen,	5, building_extras, false, false},
+{"museum",		'm',	c_green,		5, building_extras, false, false},
 {"hospital",		'H',	c_ltred,	5, building_extras, false, false},
 {"hospital",		'H',	c_red,		5, building_extras, false, false},
 {"evac shelter",	'+',	c_white,	2, no_extras, true, false},

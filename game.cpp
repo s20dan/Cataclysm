@@ -3639,34 +3639,58 @@ void game::examine()
    u.moves -= 300;
    handle_liquid(gas, false, true);
   }
- } else if (m.ter(examx, examy) == t_groundsheet && query_yn("Take down tent?")) {
-   add_msg("You take down your tent.");
-  item tent(itypes[itm_tent], turn);
+ } else if (m.ter(examx, examy) == t_floor) {
+   m.ter(examx, examy) = t_wreckage;
+ } else if (m.ter(examx, examy) == t_wreckage &&
+            query_yn("Sift through the wreckage?")) {
+  add_msg("You look for anything useful");
+  item chunk(itypes[itm_steel_chunk], turn);
+  item pipe(itypes[itm_pipe], turn);
+   u.moves -=100;
+    if (one_in(u.dex_cur)) {
+     add_msg("You cut your hands!");
+     u.hit(this, bp_hands, 0, 0, rng(1, 4));
+ } if (one_in(4)) {
+    add_msg("You find a chunk of steel!");
+    m.add_item(u.posx, u.posy, chunk);
+    m.ter(examx, examy) = t_dirt;
+ } else if (one_in(8)) {
+    add_msg("You find a pipe");
+    m.add_item(u.posx, u.posy, pipe);
+    m.ter(examx, examy) = t_dirt;
+ } else {
+   add_msg("You can find nothing of use");
    m.ter(examx, examy) = t_dirt;
-   m.ter(examx +1, examy) = t_dirt;
-   m.ter(examx -1, examy) = t_dirt;
-   m.ter(examx -1, examy +1) = t_dirt;
-   m.ter(examx +1, examy -1) = t_dirt;
-   m.ter(examx -1, examy -1) = t_dirt;
-   m.ter(examx +1, examy +1) = t_dirt;
-   m.ter(examx, examy +1) = t_dirt;
-   m.ter(examx, examy -1) = t_dirt;
-   u.moves -= 1000;
-   m.add_item(examx, examy, tent);
+  }
+ } else if (m.ter(examx, examy) == t_groundsheet && 
+            query_yn("Take down tent?")) {
+   add_msg("You take down your tent.");
+    item tent(itypes[itm_tent], turn);
+    m.ter(examx, examy) = t_dirt;
+    m.ter(examx +1, examy) = t_dirt;
+    m.ter(examx -1, examy) = t_dirt;
+    m.ter(examx -1, examy +1) = t_dirt;
+    m.ter(examx +1, examy -1) = t_dirt;
+    m.ter(examx -1, examy -1) = t_dirt;
+    m.ter(examx +1, examy +1) = t_dirt;
+    m.ter(examx, examy +1) = t_dirt;
+    m.ter(examx, examy -1) = t_dirt;
+    u.moves -= 1000;
+    m.add_item(examx, examy, tent);
  } else if (m.ter(examx, examy) == t_awnsheet && query_yn("Take down awning?")) {
    add_msg("You disassemble the awning.");
-  item awning(itypes[itm_awning], turn);
-   m.ter(examx, examy) = t_dirt;
-   m.ter(examx +1, examy) = t_dirt;
-   m.ter(examx -1, examy) = t_dirt;
-   m.ter(examx -1, examy +1) = t_dirt;
-   m.ter(examx +1, examy -1) = t_dirt;
-   m.ter(examx -1, examy -1) = t_dirt;
-   m.ter(examx +1, examy +1) = t_dirt;
-   m.ter(examx, examy +1) = t_dirt;
-   m.ter(examx, examy -1) = t_dirt;
-   u.moves -= 1000;
-   m.add_item(examx, examy, awning);
+    item awning(itypes[itm_awning], turn);
+    m.ter(examx, examy) = t_dirt;
+    m.ter(examx +1, examy) = t_dirt;
+    m.ter(examx -1, examy) = t_dirt;
+    m.ter(examx -1, examy +1) = t_dirt;
+    m.ter(examx +1, examy -1) = t_dirt;
+    m.ter(examx -1, examy -1) = t_dirt;
+    m.ter(examx +1, examy +1) = t_dirt;
+    m.ter(examx, examy +1) = t_dirt;
+    m.ter(examx, examy -1) = t_dirt;
+    u.moves -= 1000;
+    m.add_item(examx, examy, awning);
  } else if (m.ter(examx, examy) == t_pit && query_yn("Place a 2x4 over that pit?")) {
   if (u.has_amount(itm_2x4, 1)) {
    m.ter(examx, examy) = t_pit_bridge;
@@ -5226,6 +5250,12 @@ void game::plmove(int x, int y)
    if (!u.has_trait(PF_PARKOUR) || one_in(4)) {
     add_msg("You cut yourself on the %s!", m.tername(x, y).c_str());
     u.hit(this, bp_torso, 0, 0, rng(1, 4));
+   }
+  }
+  if (m.has_flag(razor, x, y) && !one_in(2) && !one_in(80 - int(u.dex_cur/2))) {
+   if (!u.has_trait(PF_PARKOUR) || one_in(3)) {
+    add_msg("You badly cut yourself on the %s!", m.tername(x, y).c_str());
+    u.hit(this, bp_torso, 0, 0, rng(10, 20));
    }
   }
   if (!u.has_artifact_with(AEP_STEALTH) && !u.has_trait(PF_LEG_TENTACLES)) {

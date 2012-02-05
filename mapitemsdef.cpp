@@ -185,7 +185,7 @@ void game::init_mapitems()
 	itm_bandages, itm_aspirin, itm_bat, itm_sneakers, itm_tshirt,
 	itm_tank_top, itm_gloves_fingerless, itm_glasses_safety,
 	itm_goggles_swim, itm_goggles_ski, itm_hat_ball, itm_helmet_bike,
-	itm_helmet_ball, itm_manual_brawl, NULL);
+	itm_helmet_ball, itm_manual_brawl, itm_fishingrod, NULL);
 
  setvector(
    mapitems[mi_camping],
@@ -195,7 +195,7 @@ void game::init_mapitems()
 	itm_manual_first_aid, itm_manual_traps, itm_lighter, itm_sewing_kit,
 	itm_hammer, itm_flashlight, itm_water_purifier, itm_radio, itm_beartrap,
         itm_UPS_off, itm_string_36, itm_longbow, itm_compbow, itm_arrow_wood,
-        itm_arrow_cf, itm_tent, itm_awning, NULL);
+        itm_arrow_cf, itm_tent, itm_awning, itm_fishingrod, NULL);
 
  setvector(
    mapitems[mi_allsporting],
@@ -208,7 +208,7 @@ void game::init_mapitems()
 	itm_manual_knives, itm_manual_first_aid, itm_manual_traps, itm_lighter,
 	itm_sewing_kit, itm_hammer, itm_flashlight, itm_water_purifier,
 	itm_radio, itm_beartrap, itm_extinguisher, itm_string_36, itm_longbow,
-	itm_compbow, itm_arrow_wood, itm_arrow_cf, NULL);
+	itm_compbow, itm_arrow_wood, itm_arrow_cf, itm_fishingrod, NULL);
 
  setvector(
    mapitems[mi_alcohol],
