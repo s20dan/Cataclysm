@@ -142,8 +142,6 @@ const ter_t terlist[num_terrain_types] = {  // MUST match enum ter_id above!
 	mfb(transparent)|mfb(diggable)},
 {"mound of dirt",    '#', c_brown,   3,
 	mfb(transparent)|mfb(diggable)},
-{"furrowed soil",    '~', c_brown,   3,
-        mfb(transparent)|mfb(sealed)},
 {"shallow pit",	     '0', c_yellow,  8,
 	mfb(transparent)},
 {"pit",              '0', c_brown,  10,

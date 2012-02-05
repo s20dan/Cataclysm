@@ -105,6 +105,7 @@ class iuse
   void barricade        (game *g, player *p, item *it, bool t);
   void awning           (game *g, player *p, item *it, bool t);
   void fish             (game *g, player *p, item *it, bool t);
+  void plant            (game *g, player *p, item *it, bool t);
 // MACGUFFINS
   void mcg_note		(game *g, player *p, item *it, bool t);
 // ARTIFACTS
