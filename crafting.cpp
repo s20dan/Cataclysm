@@ -543,6 +543,14 @@ RECIPE(itm_c4, CC_WEAPON, sk_mechanics, sk_electronics, 4, 8000);
   COMP(itm_rag, 20, itm_fur, 16, itm_leather, 12, NULL);
 
 // MISC
+ 
+ RECIPE(itm_nail,      CC_MISC, sk_null,    sk_null, 0, 1000);
+  TOOL(itm_hammer, -1, itm_hatchet, -1, NULL);
+  TOOL(itm_forge, -1, NULL);
+  TOOL(itm_fire, -1, NULL);
+  COMP(itm_steel_chunk, 1, NULL);
+  COMP(itm_water, 2, itm_sizzle, 1, NULL);
+
  RECIPE(itm_barricade, CC_MISC, sk_null,    sk_null, 0, 10000);
   TOOL(itm_hammer, -1, itm_hatchet, -1, itm_nailgun, -1, NULL);
   COMP(itm_2x4, 3, NULL);
@@ -557,7 +565,7 @@ RECIPE(itm_c4, CC_WEAPON, sk_mechanics, sk_electronics, 4, 8000);
 
  RECIPE(itm_stake,     CC_MISC, sk_null, sk_null, 0, 1000);
   TOOL(itm_hatchet, -1, itm_hammer, -1, itm_rock, -1, NULL);
-  COMP(itm_rock, 1);
+  COMP(itm_rock, 1, NULL);
 
  RECIPE(itm_crossbar,  CC_MISC, sk_null, sk_null, 0, 1000);
   TOOL(itm_hatchet, -1, itm_hammer, -1, itm_rock, -1, NULL);

@@ -3639,6 +3639,12 @@ void game::examine()
    u.moves -= 300;
    handle_liquid(gas, false, true);
   }
+ } else if (m.ter(examx, examy) == t_cot && query_yn("Fold up cot?")) {
+  item cot(itypes[itm_cot], turn);
+  m.add_item(u.posx, u.posy, cot);
+  add_msg("You fold up the cot");
+  u.moves -=50;
+  m.ter(examx, examy) = t_floor;
  } else if (m.ter(examx, examy) == t_wreckage &&
             query_yn("Sift through the wreckage?")) {
   add_msg("You look for anything useful");

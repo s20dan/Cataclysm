@@ -2313,6 +2313,29 @@ void iuse::efence(game *g, player *p, item *it, bool t)
  }
 }
 
+void iuse::cot(game *g, player *p, item *it, bool t)
+{
+ int dirx, diry;
+ g->draw();
+ mvprintw(0, 0, "Place your cot where?");
+ get_direction(dirx, diry, input());
+ if (dirx == -2) {
+  g->add_msg("Invalid direction.");
+  return;
+ }
+ dirx += p->posx;
+ diry += p->posy;
+ ter_id type = g->m.ter(dirx, diry);
+ if (type == t_floor) {
+  g->add_msg("You unfold your cot and lay in on the ground");
+   p->moves -= (10);
+   g->m.ter(dirx, diry) = t_cot;
+   it->invlet = 0;
+  } else {
+  g->add_msg("You can only place this indoors");
+ }
+}
+
 /* MACGUFFIN FUNCTIONS
  * These functions should refer to it->associated_mission for the particulars
  */

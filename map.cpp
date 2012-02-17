@@ -303,6 +303,48 @@ bool map::bash(int x, int y, int str, std::string &sound)
    return true;
   }
   break;
+ case t_counter:
+  if (str >= dice(3, 16)) {
+   sound += "smash!";
+   ter(x, y) = t_floor;
+   int num_boards = rng(1, 5);
+   for (int i = 0; i < num_boards; i++)
+    add_item(x, y, (*itypes)[itm_2x4], 0);
+   return true;
+  } else {
+   sound += "whump.";
+   return true;
+  }
+  break;
+ case t_bed:
+ case t_cot:
+  if (str >= dice(6, 45)) {
+   sound += "skree!";
+   ter(x, y) = t_floor;
+    add_item(x, y, (*itypes)[itm_sheet], 0);
+   int num_planks = rng(2, 8);
+   for (int i = 0; i < num_planks; i++)
+    add_item(x, y, (*itypes)[itm_2x4], 0);
+   return true;
+  } else {
+   sound += "whump.";
+   return true;
+  }
+  break;
+
+ case t_rack:
+  if (str >= dice(6, 45)) {
+   sound += "skree!";
+   ter(x, y) = t_floor;
+   int num_pipes = rng(1, 6);
+   for (int i = 0; i < num_pipes; i++)
+    add_item(x, y, (*itypes)[itm_pipe], 0);
+   return true;
+  } else {
+   sound += "whump.";
+   return true;
+  }
+  break;
  case t_dresser:
  case t_bookcase:
   if (str >= dice(3, 45)) {

@@ -101,6 +101,24 @@ void game::init_construction()
    COMP(itm_2x4, 6, NULL);
    COMP(itm_nail, 20, NULL);
 
+ CONSTRUCT("Build Forge",    0, &construct::able_empty, &construct::done_nothing);
+  STAGE(t_forge, 10);
+  COMP(itm_rock, 10, NULL);
+  COMP(itm_pot, 1, NULL);
+
+ CONSTRUCT("Build Grindstone",0, &construct::able_empty, &construct::done_nothing);
+  STAGE(t_grindstone, 10);
+  TOOL(itm_rock, itm_hammer, itm_hatchet, NULL);
+  COMP(itm_rock, 5, NULL);
+  COMP(itm_2x4, 10, NULL);
+  COMP(itm_stake, 4, NULL);
+
+ CONSTRUCT("Water Tub", 0, &construct::able_empty, &construct::done_nothing);
+  STAGE(t_watertub, 10);
+  TOOL(itm_rock, itm_hatchet, itm_hammer, NULL);
+  COMP(itm_2x4, 4, NULL);
+  COMP(itm_stake, 4, NULL);
+  COMP(itm_water, 5, NULL);
  CONSTRUCT("Build Palisade", 3, &construct::able_empty, &construct::done_nothing);
   STAGE(t_palisade, 10);
    TOOL(itm_hammer, itm_hatchet, NULL);
@@ -152,6 +170,29 @@ void game::init_construction()
    COMP(itm_2x4, 8, NULL);
    COMP(itm_nail, 40, NULL);
 
+ CONSTRUCT("Build Counter",1, &construct::able_indoors,
+                            &construct::done_nothing);
+  STAGE(t_counter, 20);
+   TOOL(itm_hammer, itm_hatchet, itm_nailgun, NULL);
+   COMP(itm_2x4, 5, NULL);
+   COMP(itm_nail, 10, NULL);
+
+
+ CONSTRUCT("Build Bed",1, &construct::able_indoors,
+                            &construct::done_nothing);
+  STAGE(t_cot, 20);
+   TOOL(itm_hammer, itm_hatchet, itm_nailgun, NULL);
+   COMP(itm_2x4, 6, NULL);
+   COMP(itm_nail, 10, NULL);
+   COMP(itm_rag, 10, itm_sheet, 1, NULL);
+
+
+ CONSTRUCT("Build Dresser",1, &construct::able_indoors,
+                            &construct::done_nothing);
+  STAGE(t_dresser, 20);
+   TOOL(itm_hammer, itm_hatchet, itm_nailgun, NULL);
+   COMP(itm_2x4, 5, NULL);
+   COMP(itm_nail, 10, NULL);
 }
 
 void game::construction_menu()
@@ -302,6 +343,8 @@ void game::construction_menu()
   switch (ch) {
    case 'j':
     update_info = true;
+    wclear(w_con);
+    wrefresh(w_con);
     if (select < constructions.size() - 1)
      select++;
     else
@@ -309,6 +352,8 @@ void game::construction_menu()
     break;
    case 'k':
     update_info = true;
+    wclear(w_con);
+    wrefresh(w_con);
     if (select > 0)
      select--;
     else
@@ -487,6 +532,11 @@ void game::complete_construction()
 bool construct::able_empty(game *g, point p)
 {
  return (g->m.move_cost(p.x, p.y) == 2);
+}
+
+bool construct::able_indoors(game *g, point p)
+{
+ return (g->m.ter(p.x, p.y) == t_floor);
 }
 
 bool construct::able_window(game *g, point p)

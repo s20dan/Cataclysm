@@ -148,6 +148,7 @@ void monster::plan(game *g)
 // 4) Sound-based tracking
 void monster::move(game *g)
 {
+
 // We decrement wandf no matter what.  We'll save our wander_to plans until
 // after we finish out set_dest plans, UNLESS they time out first.
  if (wandf > 0)
@@ -490,17 +491,6 @@ void monster::move_to(game *g, int x, int y)
  if (mondex == -1) { //...assuming there's no monster there
   if (plans.size() > 0)
    plans.erase(plans.begin());
-  if (g->m.has_flag(electric, x, y)); {
-  hurt(rng(10, 50));
-  moves -= 400;
-  }
-  if (g->m.has_flag(sharp, x, y)); {
-  hurt(rng(1, 5));
-  }
-  if (g->m.has_flag(razor, x, y)); {
-  hurt(rng(10, 20));
-  moves -= 100;
-  }
   if (has_flag(MF_SWIMS) && g->m.has_flag(swimmable, x, y))
    moves += 50;
   if (!has_flag(MF_DIGS) && !has_flag(MF_FLIES) &&
@@ -515,6 +505,17 @@ void monster::move_to(game *g, int x, int y)
    if (dice(3, sk_dodge + 1) < dice(3, tr->avoidance)) {
     trapfuncm f;
     (f.*(tr->actm))(g, this, posx, posy);
+  }
+  if (g->m.has_flag(sharp, x, y)); {
+  hurt(rng(1, 5));
+  }
+  if (g->m.has_flag(razor, x, y)); {
+  hurt(rng(10, 20));
+  moves -= 100;
+  }
+  if (g->m.has_flag(electric, x, y)); {
+  hurt(rng(10, 50));
+  moves -= 400;
    }
   }
 // Diggers turn the dirt into dirtmound

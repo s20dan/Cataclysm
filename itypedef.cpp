@@ -38,8 +38,23 @@ void game::init_itypes ()
   new itype(3, 0, 0, "integrated toolset",
             "A fake item.  If you are reading this it's a bug!",
             '$', c_red, MNULL, MNULL, 0, 0, 0, 0, 0, 0));
- int index = 3;
- 
+
+ itypes.push_back(
+  new itype(4, 0, 0, "forge",
+            "A fake item.  If you are reading this it's a bug!",
+            '&', c_dkgray, MNULL, MNULL, 0, 0, 0, 0, 0, 0));
+
+ itypes.push_back(
+  new itype(4, 0, 0, "grindstone",
+            "A fake item.  If you are reading this it's a bug!",
+            '&', c_dkgray, MNULL, MNULL, 0, 0, 0, 0, 0, 0));
+
+ itypes.push_back(
+  new itype(4, 0, 0, "water",
+            "A fake item.  If you are reading this it's a bug!",
+            '&', c_dkgray, MNULL, MNULL, 0, 0, 0, 0, 0, 0));
+ int index = 6;
+
 // Drinks
 // Stim should be -8 to 8.
 // quench MAY be less than zero--salt water and liquor make you thirstier.
@@ -443,11 +458,26 @@ FOOD("coffee powder",	15, 13,	c_brown,	VEGGY,	itm_bag_plastic,
 Ground coffee beans. You can boil it into a mediocre stimulant,\n\
 or swallow it raw for a lesser stimulative boost.");
 
-//   NAME		RAR PRC	COLOR		MAT1	CONTAINER
+//   NAME	RAR PRC	COLOR		MAT1	CONTAINER
 FOOD("fish",	50, 50,	c_red,		FLESH,  itm_null,
 // VOL WGT QUE NUT SPO STM HTH ADD CHG FUN	 use_func    addiction type
     1,  2,  2,  7, 12,  0, -1,  0,  1,-10,	&iuse::none, ADD_NULL, "\
-Freshly caught fish, you could eat it raw, but cooking it is better.");
+Freshly caught fish, not cleaned, you could eat it as-is,\n\
+but cooking it is better.");
+
+FOOD("cleaned fish", 0, 100, c_red,     FLESH,  itm_null,
+    1,  1,  1,  10, 16, 0,  0,  0,  1, -5,      &iuse::none, ADD_NULL, "\
+Freshly gutted and scaled fish, not the best food\n\
+but not bad.");
+
+FOOD("cooked fish",	 0, 75, c_red,		FLESH,	itm_null,
+    1,  1,  0, 50, 24,  0,  0,  0,  1,  6,	&iuse::none,	ADD_NULL, "\
+Delicious roasted fish");
+
+FOOD("salted fish",	 0, 75, c_red,		FLESH,	itm_null,
+    1,  2,  -6, 20, 48,  0,  0,  0,  1,  -2,	&iuse::none,	ADD_NULL, "\
+Salted fish, it'll last for a long time, but it isn't\n\
+going to taste great.");
 
 // MEDS
 #define MED(name,rarity,price,color,tool,mat,stim,healthy,addict,\
@@ -942,6 +972,11 @@ A car battery, tons of uses for it.");
 MELEE("wire",            70, 100, ';', c_ltgray, IRON, MNULL,
          5, 2,    0,  2, -1, 0, "\
 A length of tough wire, could be handy for crafting.");
+
+MELEE("bedsheet",        72, 10, ';', c_dkgray,	COTTON,	MNULL,
+	 10,  2,-10,  0,  0, 0, "\
+A large bedsheet."
+);
 // ARMOR
 #define ARMOR(name,rarity,price,color,mat1,mat2,volume,wgt,dam,to_hit,\
 encumber,dmg_resist,cut_resist,env,warmth,storage,covers,des)\
@@ -3068,6 +3103,10 @@ An expensive fishing rod, perfect for the aspiring angler");
 TOOL("electric fence",        0, 1000,';',  c_cyan,   STEEL, MNULL,
         10,10,0, 4,   -5,  0,  0,  0, 0, AT_NULL, itm_null, &iuse::efence,0,"\
 An electric fence, stake it into the ground and stand well back.");
+
+TOOL("cot",                   80, 1000,';',  c_green,   STEEL, MNULL,
+        15,7,0, 4,   -5,  0,  0,  0, 0, AT_NULL, itm_null, &iuse::cot,0,"\
+A military style cot, folded up for transportation");
 // BIONICS
 // These are the modules used to install new bionics in the player.  They're
 // very simple and straightforward; a difficulty, followed by a NULL-terminated
