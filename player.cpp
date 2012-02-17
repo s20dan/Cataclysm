@@ -128,7 +128,7 @@ void player::normalize(game *g)
   hp_cur[i] = hp_max[i];
  }
 }
- 
+
 void player::reset(game *g)
 {
 // Reset our stats to normal levels
@@ -192,7 +192,7 @@ void player::reset(game *g)
  dex_cur += int(stim / 10);
  per_cur += int(stim /  7);
  int_cur += int(stim /  6);
- if (stim >= 30) { 
+ if (stim >= 30) {
   dex_cur -= int(abs(stim - 15) /  8);
   per_cur -= int(abs(stim - 15) / 12);
   int_cur -= int(abs(stim - 15) / 14);
@@ -222,7 +222,7 @@ void player::reset(game *g)
   per_cur = 0;
  if (int_cur < 0)
   int_cur = 0;
- 
+
  int mor = morale_level();
  int xp_frequency = 10 - int(mor / 20);
  if (xp_frequency < 1)
@@ -363,7 +363,7 @@ int player::run_cost(int base_cost)
 
  return movecost;
 }
- 
+
 
 int player::swim_speed()
 {
@@ -372,6 +372,8 @@ int player::swim_speed()
   ret -= 60 + str_cur * 5;
  if (has_trait(PF_TAIL_FIN))
   ret -= 100 + str_cur * 10;
+ if (has_trait(PF_FIN_DORSAL))
+  ret -= 40;
  if (has_trait(PF_SLEEK_SCALES))
   ret -= 100;
  if (has_trait(PF_LEG_TENTACLES))
@@ -581,12 +583,12 @@ void player::disp_info(game *g)
   int dexbonus = int(stim / 10);
   int perbonus = int(stim /  7);
   int intbonus = int(stim /  6);
-  if (abs(stim) >= 30) { 
+  if (abs(stim) >= 30) {
    dexbonus -= int(abs(stim - 15) /  8);
    perbonus -= int(abs(stim - 15) / 12);
    intbonus -= int(abs(stim - 15) / 14);
   }
-  
+
   if (dexbonus < 0)
    effect_name.push_back("Stimulant Overdose");
   else
@@ -939,7 +941,7 @@ which require brute force.");
     mvwprintz(w_stats, 3, 2, h_ltgray, "Dexterity:");
     mvwprintz(w_info, 0, 0, c_magenta, "\
 Dexterity affects your chance to hit in melee combat, helps you steady your\n\
-gun for ranged combat, and enhances many actions that require finesse."); 
+gun for ranged combat, and enhances many actions that require finesse.");
    } else if (line == 2) {
     mvwprintz(w_stats, 4, 2, h_ltgray, "Intelligence:");
     mvwprintz(w_info, 0, 0, c_magenta, "\
@@ -1215,7 +1217,7 @@ encumb(bp_feet) * 5);
     } else {
      mvwprintz(w_skills, 2 + i - min, 1, status, "%s:",
                skill_name(skillslist[i]).c_str());
-     mvwprintz(w_skills, 2 + i - min,19, status, "%d (%s%d%%%%)", 
+     mvwprintz(w_skills, 2 + i - min,19, status, "%d (%s%d%%%%)",
                sklevel[skillslist[i]],
                (skexercise[skillslist[i]] < 10 &&
                 skexercise[skillslist[i]] >= 0 ? " " : ""),
@@ -1265,7 +1267,7 @@ encumb(bp_feet) * 5);
    }
   }
  } while (!done);
- 
+
  werase(w_info);
  werase(w_grid);
  werase(w_stats);
@@ -1328,7 +1330,7 @@ void player::disp_morale()
  werase(w);
  delwin(w);
 }
- 
+
 
 void player::disp_status(WINDOW *w, game *g)
 {
@@ -1634,6 +1636,10 @@ int player::overmap_sight_range(int light_level)
   return (sight / (SEEX / 2));
  if (has_amount(itm_binoculars, 1))
   return 20;
+ if (has_trait(PF_EYE_STALKS))
+  return 13;
+ if (has_trait(PF_EYE_STALKS) && (has_amount(itm_binoculars, 1)))
+  return 22;
 
  return 10;
 }
@@ -1700,7 +1706,7 @@ int player::throw_range(int index)
   return str_cur * 2;
  return ret;
 }
- 
+
 int player::ranged_dex_mod(bool real_life)
 {
  int dex = (real_life ? dex_cur : dex_max);
@@ -1748,7 +1754,7 @@ int player::throw_dex_mod(bool real_life)
   return 0;
  if (dex >= 10)
   return (real_life ? 0 - rng(0, dex - 9) : 9 - dex);
- 
+
  int deviation = 0;
  if (dex < 6)
   deviation = 3 * (8 - dex);
@@ -1793,6 +1799,8 @@ int player::talk_skill()
   ret -= 4;
  else if (has_trait(PF_DEFORMED2))
   ret -= 6;
+else if (has_trait(PF_FORKED_TONGUE))
+  ret -= 1;
 
  return ret;
 }
@@ -1854,7 +1862,7 @@ void player::hit(game *g, body_part bphurt, int side, int dam, int cut)
    g->z.push_back(snake);
   }
  }
-  
+
  if (has_trait(PF_PAINRESIST))
   painadd = (sqrt(double(cut)) + dam + cut) / (rng(4, 6));
  else
@@ -1875,7 +1883,7 @@ void player::hit(game *g, body_part bphurt, int side, int dam, int cut)
   }
 
  case bp_mouth: // Fall through to head damage
- case bp_head: 
+ case bp_head:
   pain++;
   hp_cur[hp_head] -= dam;
   if (hp_cur[hp_head] < 0)
@@ -2116,7 +2124,7 @@ void player::add_disease(dis_type type, int duration, game *g)
   }
   i++;
  }
- if (!found) {   
+ if (!found) {
   if (!is_npc())
    dis_msg(g, type);
   disease tmp(type, duration);
@@ -2450,9 +2458,23 @@ void player::suffer(game *g)
   }
  }
 
- if (has_trait(PF_SLIMY)) {
+ if (has_trait(PF_SLIMY) && !has_trait(PF_ACID_TRAIL)) {
   if (g->m.field_at(posx, posy).type == fd_null)
    g->m.add_field(g, posx, posy, fd_slime, 1);
+  else if (g->m.field_at(posx, posy).type == fd_slime &&
+           g->m.field_at(posx, posy).density < 3)
+   g->m.field_at(posx, posy).density++;
+ }
+
+ if (has_trait(PF_ACID_TRAIL) && has_trait(PF_SLIMY)) {
+  if (g->m.field_at(posx, posy).type == fd_null || g->m.field_at(posx, posy).type == fd_slime)
+    if (one_in(5))
+   g->m.add_field(g, posx, posy, fd_acid, 1);
+  else if (g->m.field_at(posx, posy).type == fd_acid && one_in(5) &&
+           g->m.field_at(posx, posy).density < 3)
+   g->m.field_at(posx, posy).density++;
+    if (g->m.field_at(posx, posy).type == fd_null)
+     g->m.add_field(g, posx, posy, fd_slime, 1);
   else if (g->m.field_at(posx, posy).type == fd_slime &&
            g->m.field_at(posx, posy).density < 3)
    g->m.field_at(posx, posy).density++;
@@ -2650,6 +2672,15 @@ int player::morale_level()
    ret += 20;
  }
 
+ if (has_trait(PF_PESSIMISTIC)) {
+  if (ret < -30) {	// Up to -25 is canceled out, however -5 is always kept
+   ret += 25;
+   if (ret > 0)
+    ret = 0;
+  } else		// Otherwise, we're just extra-sad
+   ret -= 5;
+ }
+
  if (has_disease(DI_TOOK_PROZAC) && ret < 0)
   ret = int(ret / 4);
 
@@ -2676,7 +2707,7 @@ void player::add_morale(morale_type type, int bonus, int max_bonus,
   morale.push_back(tmp);
  }
 }
- 
+
 void player::sort_inv()
 {
  // guns ammo weaps armor food tools books other
@@ -2711,7 +2742,7 @@ void player::sort_inv()
 
 void player::i_add(item it)
 {
- if (it.is_food() || it.is_ammo() || it.is_gun()  || it.is_armor() || 
+ if (it.is_food() || it.is_ammo() || it.is_gun()  || it.is_armor() ||
      it.is_book() || it.is_tool() || it.is_weap() || it.is_food_container())
   inv_sorted = false;
  if (it.is_ammo()) {	// Possibly combine with other ammo
@@ -3002,7 +3033,7 @@ void player::use_charges(itype_id it, int quantity)
    }
   }
  }
-  
+
  if (weapon.type->id == it) {
   if (weapon.charges > 0 && weapon.charges <= quantity) {
    quantity -= weapon.charges;
@@ -3113,7 +3144,7 @@ bool player::has_artifact_with(art_effect_passive effect)
  }
  return false;
 }
-   
+
 
 bool player::has_amount(itype_id it, int quantity)
 {
@@ -3382,7 +3413,7 @@ bool player::eat(game *g, int index)
    } else if (comest->stim >= 10 && stim < comest->stim * 3)
     stim += comest->stim;
   }
- 
+
   iuse use;
   (use.*comest->use)(g, this, eaten, false);
   add_addiction(comest->add, comest->addict);
@@ -3427,7 +3458,7 @@ bool player::eat(game *g, int index)
     thirst = -20;
   }
  }
- 
+
  eaten->charges--;
  if (eaten->charges <= 0) {
   if (which == -1)
@@ -3577,16 +3608,21 @@ bool player::wear(game *g, char let)
              wearing_something_on(bp_head) ? "nother" : "");
   return false;
  }
- if (armor->covers & mfb(bp_hands) && has_trait(PF_WEBBED)) {
-  g->add_msg("You cannot put %s over your webbed hands.", armor->name.c_str());
+ if (armor->covers & mfb(bp_hands) &&
+     (has_trait(PF_WEBBED) || has_trait(PF_PINCERS) ||
+      has_trait(PF_TALONS) || has_trait(PF_ARM_TENTACLES) || has_trait(PF_ARM_TENTACLES_4) || has_trait(PF_ARM_TENTACLES_8))) {
+  g->add_msg("You cannot put %s over your %s.",
+             (has_trait(PF_WEBBED) ? "webbed hands" :
+              (has_trait(PF_TALONS) ? "talons" :
+               (has_trait(PF_PINCERS) ? "pincers" :
+                (has_trait(PF_ARM_TENTACLES) ? "tentacles" :
+                 (has_trait(PF_ARM_TENTACLES_4) ? "tentacles" : "tentacles"))))));
   return false;
  }
- if (armor->covers & mfb(bp_hands) && has_trait(PF_TALONS)) {
-  g->add_msg("You cannot put %s over your talons.", armor->name.c_str());
-  return false;
- }
- if (armor->covers & mfb(bp_mouth) && has_trait(PF_BEAK)) {
-  g->add_msg("You cannot put a %s over your beak.", armor->name.c_str());
+ if (armor->covers & mfb(bp_mouth) && has_trait(PF_BEAK) || has_trait(PF_MANDIBLES) || has_trait(PF_TUSKS)) {
+  g->add_msg("You cannot put a %s over your %s.", armor->name.c_str(),
+              (has_trait(PF_BEAK) ? "beak" :
+               (has_trait(PF_MANDIBLES) ? "mandibles" : "tusks")));
   return false;
  }
  if (armor->covers & mfb(bp_feet) && has_trait(PF_HOOVES)) {
@@ -3668,7 +3704,7 @@ void player::use(game *g, char let)
   used = &copy;
   replace_item = true;
  }
- 
+
  if (used->is_null()) {
   g->add_msg("You do not have that item.");
   return;
@@ -3895,6 +3931,9 @@ void player::read(game *g, char ch)
  if (tmp->intel > 0 && has_trait(PF_ILLITERATE)) {
   g->add_msg("You're illiterate!");
   return;
+ } else if (tmp->intel > 0 && has_trait(PF_CROSSEYED) && !one_in(6)) {
+   g->add_msg("You can't quite focus on the words.");
+   return;
  } else if (tmp->intel > int_cur) {
   g->add_msg("This book is way too complex for you to understand.");
   return;
@@ -3912,7 +3951,7 @@ void player::read(game *g, char ch)
  activity = player_activity(ACT_READ, time, index);
  moves = 0;
 }
- 
+
 void player::try_to_sleep(game *g)
 {
  add_disease(DI_LYING_DOWN, 300, g);
@@ -3995,6 +4034,16 @@ int player::encumb(body_part bp)
      (has_trait(PF_ARM_TENTACLES) || has_trait(PF_ARM_TENTACLES_4) ||
       has_trait(PF_ARM_TENTACLES_8)))
   ret += 3;
+  if (has_trait (PF_PINCERS) && bp == bp_hands)
+      ret += 4;
+ if (has_trait(PF_OVERWEIGHT) && bp ==  bp_torso)
+  ret += 1;
+ if (has_trait(PF_EYES_4) && bp ==  bp_eyes)
+  ret -= 1;
+ if (has_trait(PF_EYES_6) && bp ==  bp_eyes)
+  ret -= 2;
+ if (has_trait(PF_EYES_8) && bp ==  bp_eyes)
+  ret -= 3;
  return ret;
 }
 
@@ -4023,6 +4072,8 @@ int player::armor_bash(body_part bp)
   ret += 2;
  if (has_trait(PF_SHELL) && bp == bp_torso)
   ret += 6;
+ if (has_trait(PF_PINCERS) && bp == bp_hands)
+  ret += 2;
  return ret;
 }
 
@@ -4053,6 +4104,8 @@ int player::armor_cut(body_part bp)
   ret += 4;
  if (has_trait(PF_SLEEK_SCALES))
   ret += 1;
+ if (has_trait(PF_CHAMELEON_SCALES))
+  ret += 1;
  if (has_trait(PF_CHITIN))
   ret += 2;
  if (has_trait(PF_CHITIN2))
@@ -4061,6 +4114,8 @@ int player::armor_cut(body_part bp)
   ret += 8;
  if (has_trait(PF_SHELL) && bp == bp_torso)
   ret += 14;
+ if (has_trait(PF_PINCERS) && bp == bp_hands)
+  ret += 4;
  return ret;
 }
 
@@ -4157,9 +4212,7 @@ void player::absorb(game *g, body_part bp, int &dam, int &cut)
   cut -= 4;
  if (has_trait(PF_SLEEK_SCALES))
   cut -= 1;
- if (has_trait(PF_FEATHERS))
-  dam--;
- if (has_trait(PF_FUR))
+ if (has_trait(PF_FEATHERS) || has_trait(PF_FUR) || has_trait(PF_PLANTSKIN))
   dam--;
  if (has_trait(PF_CHITIN))
   cut -= 2;
@@ -4171,8 +4224,6 @@ void player::absorb(game *g, body_part bp, int &dam, int &cut)
   dam -= 2;
   cut -= 8;
  }
- if (has_trait(PF_PLANTSKIN))
-  dam--;
  if (has_trait(PF_BARK))
   dam -= 2;
  if (bp == bp_feet && has_trait(PF_HOOVES))
@@ -4186,7 +4237,7 @@ void player::absorb(game *g, body_part bp, int &dam, int &cut)
  if (cut < 0)
   cut = 0;
 }
-  
+
 int player::resist(body_part bp)
 {
  int ret = 0;
