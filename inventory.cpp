@@ -234,10 +234,15 @@ void inventory::form_from_map(game *g, point origin, int range)
     water.charges = 1;
     add_item(water);
    }
-   if (g->m.ter(x, y) == t_crucible && g->m.field_at(x, y).type == fd_fire); {
+   if (g->m.ter(x, y) == t_crucible) {
     item crucible(g->itypes[itm_hot_crucible], 0);
     crucible.charges = 1;
     add_item(crucible);
+   }
+   if (g->m.ter(x, y) == t_anvil) {
+    item anvil(g->itypes[itm_anvil], 0);
+    anvil.charges = 1;
+    add_item(anvil);
    }
   }
  }

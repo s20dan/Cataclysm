@@ -2336,6 +2336,37 @@ void iuse::cot(game *g, player *p, item *it, bool t)
  }
 }
 
+void iuse::dredge(game *g, player *p, item *it, bool t)
+{
+ int dirx, diry;
+ g->draw();
+ mvprintw(0, 0, "Dredge where?");
+ get_direction(dirx, diry, input());
+ if (dirx == -2) {
+  g->add_msg("Invalid direction.");
+  return;
+ }
+ dirx += p->posx;
+ diry += p->posy;
+ ter_id type = g->m.ter(dirx, diry);
+ if (type == t_bog)
+ {
+  g->add_msg("You dredge for iron");
+  p->moves -= (3000);
+  g->m.ter(dirx, diry) = t_dbog;
+  if (one_in(2)) {
+   int irons = rng(2, 10);
+   item iron(g->itypes[itm_iron], 0, g->nextinv);
+   for (int i = 0; i < irons; i++)
+    g->m.add_item(dirx, diry, iron);
+ } else {
+   g->add_msg("You find nothing, and this bog is depleted");
+  }
+ } else {
+   g->add_msg("You can only dredge in undepleted bogs");
+ }
+}
+
 /* MACGUFFIN FUNCTIONS
  * These functions should refer to it->associated_mission for the particulars
  */

@@ -22,7 +22,7 @@ enum itype_id {
 itm_null = 0,
 itm_corpse,
 // Special pseudoitems
-itm_fire, itm_toolset, itm_forge, itm_grindstone, itm_forgewater,
+itm_fire, itm_toolset, itm_forge, itm_grindstone, itm_forgewater, itm_anvil,
 itm_hot_crucible,
 // Drinks
 itm_water, itm_sewage, itm_salt_water, itm_oj, itm_apple_cider,
@@ -66,7 +66,8 @@ itm_wrapper, itm_syringe, itm_rag, itm_fur, itm_leather, itm_superglue,
  itm_gold, itm_coal, itm_petrified_eye, itm_spiral_stone, itm_rapier, itm_cane,
  itm_binoculars, itm_usb_drive, itm_log, itm_splinter, itm_stake, itm_crossbar,
  itm_hog, itm_carbattery, itm_wire, itm_sheet, itm_carving_knife, itm_bellows,
- itm_nailmold, itm_crucible, itm_clay,
+ itm_crucible, itm_clay, itm_shears, itm_vice, itm_anvilmold, itm_anvil_mobile,
+ itm_iron, itm_charcoal, itm_coalchunk,
 // Footwear
 itm_sneakers, itm_boots, itm_boots_steel, itm_boots_winter, itm_mocassins,
  itm_flip_flops, itm_dress_shoes, itm_heels,
@@ -157,6 +158,7 @@ itm_lighter, itm_sewing_kit, itm_scissors, itm_hammer, itm_extinguisher,
  itm_mp3_on, itm_vortex_stone, itm_dogfood, itm_boobytrap, itm_c4,  itm_c4armed,
  itm_dog_whistle, itm_vacutainer, itm_ax, itm_tent, itm_saw, itm_pickaxe,
  itm_barricade, itm_awning, itm_fishingrod, itm_electricfence, itm_cot,
+ itm_dredge,
 // Bionics containers
 itm_bionics_battery,       itm_bionics_power,   itm_bionics_tools,
  itm_bionics_neuro,        itm_bionics_sensory, itm_bionics_aquatic,

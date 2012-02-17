@@ -57,10 +57,6 @@ void game::init_construction()
   STAGE(t_dirt, 5);
    TOOL(itm_shovel, NULL);
 
- CONSTRUCT("Build Firepit", 0, &construct::able_dig, &construct::done_campfire);
-  STAGE(t_campfire, 5);
-  COMP(itm_rock, 5, NULL);
-
  CONSTRUCT("Clean Broken Window", 0, &construct::able_broken_window,
                                      &construct::done_nothing);
   STAGE(t_window_empty, 5);
@@ -101,22 +97,31 @@ void game::init_construction()
    COMP(itm_2x4, 6, NULL);
    COMP(itm_nail, 20, NULL);
 
- CONSTRUCT("Build Forge",    0, &construct::able_empty, &construct::done_nothing);
+ CONSTRUCT("Build Forge", 0, &construct::able_empty, &construct::done_nothing);
   STAGE(t_forge, 10);
-  COMP(itm_rock, 10, NULL);
-  COMP(itm_pot, 1, NULL);
+  TOOL(itm_hammer, itm_rock, itm_hatchet, NULL);
+//  COMP(itm_nail, 80, itm_stake, 20, NULL);
+  COMP(itm_rock, 20, NULL);
+  COMP(itm_bellows, 1, NULL);
+//  COMP(itm_chain, 1, NULL);
+//  COMP(itm_2x4, 15, NULL);
+
+ CONSTRUCT("Build Anvil", 0, &construct::able_empty, &construct::done_nothing);
+  STAGE(t_anvil, 1);
+  COMP(itm_anvil_mobile, 1, NULL);
 
  CONSTRUCT("Build Crucible", 0, &construct::able_empty, &construct::done_nothing);
   STAGE(t_crucible, 10);
   COMP(itm_crucible, 1, NULL);
   COMP(itm_2x4, 4, NULL);
   COMP(itm_stake, 2, NULL);
- CONSTRUCT("Build Grindstone",0, &construct::able_empty, &construct::done_nothing);
+
+/* CONSTRUCT("Build Grindstone",0, &construct::able_empty, &construct::done_nothing);
   STAGE(t_grindstone, 10);
   TOOL(itm_rock, itm_hammer, itm_hatchet, NULL);
   COMP(itm_rock, 5, NULL);
   COMP(itm_2x4, 10, NULL);
-  COMP(itm_stake, 4, NULL);
+  COMP(itm_stake, 4, NULL); */
 
  CONSTRUCT("Water Tub", 0, &construct::able_empty, &construct::done_nothing);
   STAGE(t_watertub, 10);
@@ -124,6 +129,7 @@ void game::init_construction()
   COMP(itm_2x4, 4, NULL);
   COMP(itm_stake, 4, NULL);
   COMP(itm_water, 5, NULL);
+
  CONSTRUCT("Build Palisade", 3, &construct::able_empty, &construct::done_nothing);
   STAGE(t_palisade, 10);
    TOOL(itm_hammer, itm_hatchet, NULL);
@@ -152,10 +158,6 @@ void game::init_construction()
    TOOL(itm_hammer, itm_hatchet, itm_nailgun, NULL);
    COMP(itm_2x4, 10, NULL);
    COMP(itm_nail, 10, NULL);
-  STAGE(t_door_b, 15);
-   TOOL(itm_hammer, itm_hatchet, itm_nailgun, NULL);
-   COMP(itm_2x4, 4, NULL);
-   COMP(itm_nail, 12, NULL);
   STAGE(t_door_c, 15);
    TOOL(itm_hammer, itm_hatchet, itm_nailgun, NULL);
    COMP(itm_2x4, 4, NULL);

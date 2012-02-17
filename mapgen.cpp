@@ -324,7 +324,7 @@ void map::draw_map(oter_id terrain_type, oter_id t_north, oter_id t_east,
      if (ter(x, y) == t_water_sh)
       ter(x, y) = t_water_dp;
      else if (ter(x, y) == t_dirt || ter(x, y) == t_underbrush)
-      ter(x, y) = t_water_sh;
+      ter(x, y) = t_bog;
     } else
      i = 20;
     x += rng(-2, 2);

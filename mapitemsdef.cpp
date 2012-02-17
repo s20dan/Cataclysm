@@ -195,7 +195,8 @@ void game::init_mapitems()
 	itm_manual_first_aid, itm_manual_traps, itm_lighter, itm_sewing_kit,
 	itm_hammer, itm_flashlight, itm_water_purifier, itm_radio, itm_beartrap,
         itm_UPS_off, itm_string_36, itm_longbow, itm_compbow, itm_arrow_wood,
-        itm_arrow_cf, itm_tent, itm_awning, itm_fishingrod, NULL);
+        itm_arrow_cf, itm_tent, itm_awning, itm_fishingrod, itm_carving_knife,
+        NULL);
 
  setvector(
    mapitems[mi_allsporting],
@@ -526,7 +527,7 @@ void game::init_mapitems()
    mapitems[mi_weapons],
 	itm_chain, itm_hammer, itm_wrench, itm_hammer_sledge, itm_hatchet,
 	itm_ax, itm_knife_combat, itm_pipe, itm_bat, itm_machete, itm_katana,
-	itm_baton, itm_tazer, itm_rapier, NULL);
+	itm_baton, itm_tazer, itm_rapier, itm_carving_knife, NULL);
 
  setvector(
    mapitems[mi_survival_armor],

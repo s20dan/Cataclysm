@@ -55,10 +55,15 @@ void game::init_itypes ()
             '&', c_dkgray, MNULL, MNULL, 0, 0, 0, 0, 0, 0));
 
  itypes.push_back(
-  new itype(7, 0, 0, "heated crucible",
+  new itype(7, 0, 0, "crucible",
             "A fake item.  If you are reading this it's a bug!",
             '&', c_dkgray, MNULL, MNULL, 0, 0, 0, 0, 0, 0));
- int index = 7;
+
+ itypes.push_back(
+  new itype(8, 0, 0, "anvil",
+            "A fake item.  If you are reading this it's a bug!",
+            '&', c_dkgray, MNULL, MNULL, 0, 0, 0, 0, 0, 0));
+ int index = 8;
 
 // Drinks
 // Stim should be -8 to 8.
@@ -991,11 +996,6 @@ MELEE("bellows",          0, 100, ';', c_ltgray, LEATHER, MNULL,
 A large set of makeshift bellows, vital for\n\
 the post apocalyptic blacksmith.");
 
-MELEE("nail mould",       0, 100, ';', c_ltgray, STONE, MNULL,
-         5,  3,  3, 0, -2, 0, "\
-A clay mould with many nailholes in it\n\
-useful for making nails.");
-
 MELEE("crucible",       0, 100, ';', c_ltgray, STONE, MNULL,
          15,  10,  3, 0, -2, 0, "\
 A large clay crucible, ready to be set up for smithing");
@@ -1003,6 +1003,41 @@ A large clay crucible, ready to be set up for smithing");
 MELEE("clay",       0, 100, ';', c_ltgray, STONE, MNULL,
          2,  3,  3, 0, -2, 0, "\
 A lump of clay");
+
+MELEE("shears",     0, 100, ';', c_ltgray, STEEL, MNULL,
+         4, 3,   0, 0,  -1, 0, "\
+A pair of sharp, sturdy, steel shears, for cutting metal.");
+
+MELEE("vise",       0, 100, ',', c_brown,  STEEL, MNULL,
+         2, 1,   1, 0,  -1, 0, "\
+A makeshift vise, used to hold things in place.");
+
+MELEE("anvil mould", 0, 1000, ';', c_dkgray, STONE, MNULL,
+         20, 6,  9, 0,  -5, 0, "\
+An anvil mould made of clay, fill it up with\n\
+molten metal and you'll have an anvil.");
+
+MELEE("anvil", 0, 1000, 'z', c_dkgray, IRON, MNULL,
+         20, 50,  9, 0,  -5, 0, "\
+An very heavy anvil, don't leave it hanging from a rope");
+
+//    NAME		RAR PRC SYM COLOR	MAT1	MAT2
+MELEE("chunk of iron", 30, 10, ',', c_ltgray,	IRON,	MNULL,
+//	VOL WGT DAM CUT HIT FLAGS
+	 2,  6, 12,  0, -2, 0, "\
+A lump of iron, melt it down, hammer it, whatever");
+
+//    NAME		RAR PRC SYM COLOR	MAT1	MAT2
+MELEE("charcoal", 30, 10, ',', c_dkgray,	WOOD,	MNULL,
+//	VOL WGT DAM CUT HIT FLAGS
+	 5,  2, 0,  0, -2, 0, "\
+A large lump of charcoal, useful for heating during smithing");
+
+//    NAME		RAR PRC SYM COLOR	MAT1	MAT2
+MELEE("chunk of coal", 30, 10, ',', c_dkgray,	WOOD,	MNULL,
+//	VOL WGT DAM CUT HIT FLAGS
+	 4,  6, 12,  0, -2, 0, "\
+A very large chunk of coal, useful for heating during smithing");
 
 // ARMOR
 #define ARMOR(name,rarity,price,color,mat1,mat2,volume,wgt,dam,to_hit,\
@@ -3134,6 +3169,10 @@ An electric fence, stake it into the ground and stand well back.");
 TOOL("cot",                   80, 1000,';',  c_green,   STEEL, MNULL,
         15,7,0, 4,   -5,  0,  0,  0, 0, AT_NULL, itm_null, &iuse::cot,0,"\
 A military style cot, folded up for transportation");
+
+TOOL("dredge",                   80, 1000,'/',  c_brown,   WOOD, STEEL,
+        15,7,0, 4,   -5,  0,  0,  0, 0, AT_NULL, itm_null, &iuse::dredge,0,"\
+It's shaped a bit like a plough, it's used for bog iron dredging");
 // BIONICS
 // These are the modules used to install new bionics in the player.  They're
 // very simple and straightforward; a difficulty, followed by a NULL-terminated

@@ -66,10 +66,10 @@ enum ter_id {
 t_null = 0,
 t_hole,	// Real nothingness; makes you fall a z-level
 // Smithing
-t_forge, t_grindstone, t_watertub, t_crucible,
+t_forge, t_grindstone, t_watertub, t_crucible, t_anvil,
 // Ground
-t_dirt, t_claydirt, t_dirtmound, t_pit_shallow, t_pit, t_pit_spiked,
- t_pit_bridge, t_s_pit_bridge,
+t_dirt, t_bog, t_dbog, t_claydirt, t_dirtmound,
+t_pit_shallow, t_pit, t_pit_spiked, t_pit_bridge, t_s_pit_bridge,
 t_rock_floor, t_rubble, t_ash, t_wreckage, t_b_metal,
 t_grass, t_tent, t_flap_c, t_flap_o, t_groundsheet, t_campfire, t_awnsheet,
 t_awnfloor, t_support, t_fence_electric,
@@ -138,7 +138,10 @@ num_terrain_types
 };
 
 const ter_t terlist[num_terrain_types] = {  // MUST match enum ter_id above!
-
+{"nothing",	     ' ', c_white,   2,
+	mfb(transparent)|mfb(diggable)},
+{"empty space",      '#', c_black,   2,
+	mfb(transparent)},
 {"forge",            '&', c_dkgray,   0,
 	mfb(transparent)|mfb(bashable)},
 {"grindstone",       '&', c_ltgray,   0,
@@ -147,14 +150,16 @@ const ter_t terlist[num_terrain_types] = {  // MUST match enum ter_id above!
 	mfb(transparent)|mfb(bashable)},
 {"crucible",         'O', c_dkgray,   0,
         mfb(transparent)|mfb(bashable)},
-{"nothing",	     ' ', c_white,   2,
-	mfb(transparent)|mfb(diggable)},
-{"empty space",      '#', c_black,   2,
-	mfb(transparent)},
+{"anvil",            'z', c_dkgray,   0,
+        mfb(transparent)|mfb(bashable)},
 {"dirt",	     '.', c_brown,   2,
 	mfb(transparent)|mfb(diggable)},
+{"bog",	             '.', c_ltblue,   2,
+	mfb(transparent)|mfb(diggable)},
+{"bog",   	     '.', c_ltblue,   2,
+	mfb(transparent)|mfb(diggable)},
 {"dirt",	     '.', c_brown,   2,
-	mfb(transparent)},
+	mfb(transparent)|mfb(diggable)},
 {"mound of dirt",    '#', c_brown,   3,
 	mfb(transparent)|mfb(diggable)},
 {"shallow pit",	     '0', c_yellow,  8,
