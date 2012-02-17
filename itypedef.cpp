@@ -45,12 +45,12 @@ void game::init_itypes ()
             '&', c_dkgray, MNULL, MNULL, 0, 0, 0, 0, 0, 0));
 
  itypes.push_back(
-  new itype(4, 0, 0, "grindstone",
+  new itype(5, 0, 0, "grindstone",
             "A fake item.  If you are reading this it's a bug!",
             '&', c_dkgray, MNULL, MNULL, 0, 0, 0, 0, 0, 0));
 
  itypes.push_back(
-  new itype(4, 0, 0, "water",
+  new itype(6, 0, 0, "water",
             "A fake item.  If you are reading this it's a bug!",
             '&', c_dkgray, MNULL, MNULL, 0, 0, 0, 0, 0, 0));
  int index = 6;
