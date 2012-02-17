@@ -1163,7 +1163,32 @@ void iuse::makemound(game *g, player *p, item *it, bool t)
 
 void iuse::dig(game *g, player *p, item *it, bool t)
 {
- g->add_msg("You can dig a pit via the construction menu--hit *");
+ int dirx, diry;
+ g->draw();
+ mvprintw(0, 0, "Prospect for clay where??");
+ get_direction(dirx, diry, input());
+ if (dirx == -2) {
+  g->add_msg("Invalid direction.");
+  return;
+ }
+ dirx += p->posx;
+ diry += p->posy;
+ ter_id type = g->m.ter(dirx, diry);
+  if (g->m.ter(dirx, diry) == t_claydirt) {
+  if (!one_in(6)) {
+    g->add_msg("You find no clay");
+    p->moves -= 200;
+    g->m.ter(dirx, diry) = t_dirt;
+ } else {
+    p->moves -= 200;
+    g->add_msg("You find some clay!");
+     int clays = rng(2, 10);
+     item clay(g->itypes[itm_clay], 0, g->nextinv);
+      for (int i = 0; i < clays; i++)
+      g->m.add_item(dirx, diry, clay);
+   }
+  }
+
 /*
  int dirx, diry;
  g->draw();
@@ -2354,16 +2379,17 @@ void iuse::dredge(game *g, player *p, item *it, bool t)
   g->add_msg("You dredge for iron");
   p->moves -= (3000);
   g->m.ter(dirx, diry) = t_dbog;
-  if (one_in(2)) {
+  if (one_in(3)) {
    int irons = rng(2, 10);
    item iron(g->itypes[itm_iron], 0, g->nextinv);
    for (int i = 0; i < irons; i++)
     g->m.add_item(dirx, diry, iron);
+    g->add_msg("You find several chunks of iron");
  } else {
    g->add_msg("You find nothing, and this bog is depleted");
   }
  } else {
-   g->add_msg("You can only dredge in undepleted bogs");
+   g->add_msg("You have already dredged this bog");
  }
 }
 

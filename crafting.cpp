@@ -550,11 +550,11 @@ RECIPE(itm_c4, CC_WEAPON, sk_mechanics, sk_electronics, 4, 8000);
   COMP(itm_2x4, 5, NULL);
   COMP(itm_stake, 4, itm_nail, 20, NULL);
 
- RECIPE(itm_charcoal,  CC_MISC, sk_null,    sk_null, 0, 1000);
+ RECIPE(itm_charcoal,  CC_MISC, sk_null,    sk_null, 0, 10000);
   TOOL(itm_fire, -1, NULL);
   COMP(itm_2x4, 1, itm_stick, 1, itm_splinter, 1, NULL);
 
- RECIPE(itm_crucible,  CC_MISC, sk_null,    sk_null, 0, 1000);
+ RECIPE(itm_crucible,  CC_MISC, sk_null,    sk_null, 0, 10000);
   TOOL(itm_fire, -1, NULL);
   COMP(itm_clay,  10, NULL);
   COMP(itm_stake, 2, NULL);
@@ -573,7 +573,7 @@ RECIPE(itm_c4, CC_WEAPON, sk_mechanics, sk_electronics, 4, 8000);
   TOOL(itm_knife_combat, -1, itm_knife_steak, -1, NULL);
   COMP(itm_clay, 15, NULL);
 
- RECIPE(itm_anvil,      CC_MISC, sk_null,    sk_null, 0, 5000);
+ RECIPE(itm_anvil,      CC_MISC, sk_null,    sk_null, 0, 10000);
   TOOL(itm_crucible, -1, NULL);
   TOOL(itm_hammer, -1, itm_rock, -1, itm_hatchet, -1, NULL);
   TOOL(itm_lighter, 1, NULL);
