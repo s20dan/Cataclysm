@@ -14,9 +14,8 @@ ter_id grass_or_dirt()
 {
  if (one_in(4))
   return t_grass;
- return t_dirt;
+ return t_claydirt;
 }
-
 enum room_type {
  room_null,
  room_closet,

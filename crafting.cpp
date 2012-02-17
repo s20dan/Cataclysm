@@ -544,12 +544,22 @@ RECIPE(itm_c4, CC_WEAPON, sk_mechanics, sk_electronics, 4, 8000);
 
 // MISC
  
- RECIPE(itm_nail,      CC_MISC, sk_null,    sk_null, 0, 1000);
-  TOOL(itm_hammer, -1, itm_hatchet, -1, NULL);
-  TOOL(itm_forge, -1, NULL);
+ RECIPE(itm_crucible,  CC_MISC, sk_null,    sk_null, 0, 1000);
   TOOL(itm_fire, -1, NULL);
+  COMP(itm_clay,  10, NULL);
+  COMP(itm_stake, 2, NULL);
+
+ RECIPE(itm_nailmold,  CC_MISC, sk_null,    sk_null, 0, 1000);
+  TOOL(itm_nail, -1, NULL);
+  TOOL(itm_fire, -1, NULL);
+  COMP(itm_clay, 1, NULL);
+
+ RECIPE(itm_nail,      CC_MISC, sk_null,    sk_null, 0, 1000);
+  TOOL(itm_nailmold, -1, NULL);
+  TOOL(itm_hot_crucible, -1, NULL);
+  TOOL(itm_forge, -1, NULL);
   COMP(itm_steel_chunk, 1, NULL);
-  COMP(itm_water, 2, itm_sizzle, 1, NULL);
+  COMP(itm_water, 2, itm_forgewater, 1, NULL);
 
  RECIPE(itm_barricade, CC_MISC, sk_null,    sk_null, 0, 10000);
   TOOL(itm_hammer, -1, itm_hatchet, -1, itm_nailgun, -1, NULL);

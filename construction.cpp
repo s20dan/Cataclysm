@@ -106,6 +106,11 @@ void game::init_construction()
   COMP(itm_rock, 10, NULL);
   COMP(itm_pot, 1, NULL);
 
+ CONSTRUCT("Build Crucible", 0, &construct::able_empty, &construct::done_nothing);
+  STAGE(t_crucible, 10);
+  COMP(itm_crucible, 1, NULL);
+  COMP(itm_2x4, 4, NULL);
+  COMP(itm_stake, 2, NULL);
  CONSTRUCT("Build Grindstone",0, &construct::able_empty, &construct::done_nothing);
   STAGE(t_grindstone, 10);
   TOOL(itm_rock, itm_hammer, itm_hatchet, NULL);

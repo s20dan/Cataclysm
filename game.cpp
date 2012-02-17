@@ -3639,6 +3639,29 @@ void game::examine()
    u.moves -= 300;
    handle_liquid(gas, false, true);
   }
+ } else if (m.ter(examx, examy) == t_claydirt && query_yn("Dig up clay?")) {
+  item clay(itypes[itm_clay], turn);
+  if (!one_in(6)) {
+    add_msg("You find no clay");
+    u.moves -= 200;
+    m.ter(examx, examy) = t_dirt;
+ } else {
+   if (u.has_amount(itm_shovel, 1)) {
+    u.moves -= 200;
+    add_msg("You find some clay!");
+     int clays = rng(2, 10);
+      for (int i = 0; i < clays; i++);
+      m.add_item(u.posx, u.posy, clay);
+      m.ter(examx, examy) = t_dirt;
+ } else {
+   u.moves -= 200;
+   add_msg("You find some clay!");
+    int clays = rng(2, 4);
+     for (int i = 0; i < clays; i++);
+      m.add_item(u.posx, u.posy, clay);
+      m.ter(examx, examy) = t_dirt;
+   }
+  }
  } else if (m.ter(examx, examy) == t_cot && query_yn("Fold up cot?")) {
   item cot(itypes[itm_cot], turn);
   m.add_item(u.posx, u.posy, cot);

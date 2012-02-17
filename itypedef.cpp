@@ -53,7 +53,12 @@ void game::init_itypes ()
   new itype(6, 0, 0, "water",
             "A fake item.  If you are reading this it's a bug!",
             '&', c_dkgray, MNULL, MNULL, 0, 0, 0, 0, 0, 0));
- int index = 6;
+
+ itypes.push_back(
+  new itype(7, 0, 0, "heated crucible",
+            "A fake item.  If you are reading this it's a bug!",
+            '&', c_dkgray, MNULL, MNULL, 0, 0, 0, 0, 0, 0));
+ int index = 7;
 
 // Drinks
 // Stim should be -8 to 8.
@@ -975,8 +980,30 @@ A length of tough wire, could be handy for crafting.");
 
 MELEE("bedsheet",        72, 10, ';', c_dkgray,	COTTON,	MNULL,
 	 10,  2,-10,  0,  0, 0, "\
-A large bedsheet."
-);
+A large bedsheet.");
+
+MELEE("carving knife",   90, 100, ';', c_ltcyan, STEEL, MNULL,
+         4,   2, 0, 9, -1, 0, "\
+A carving knife, used for carving.");
+
+MELEE("bellows",          0, 100, ';', c_ltgray, LEATHER, MNULL,
+         10,  5, 0, 0, -2, 0, "\
+A large set of makeshift bellows, vital for\n\
+the post apocalyptic blacksmith.");
+
+MELEE("nail mould",       0, 100, ';', c_ltgray, STONE, MNULL,
+         5,  3,  3, 0, -2, 0, "\
+A clay mould with many nailholes in it\n\
+useful for making nails.");
+
+MELEE("crucible",       0, 100, ';', c_ltgray, STONE, MNULL,
+         15,  10,  3, 0, -2, 0, "\
+A large clay crucible, ready to be set up for smithing");
+
+MELEE("clay",       0, 100, ';', c_ltgray, STONE, MNULL,
+         2,  3,  3, 0, -2, 0, "\
+A lump of clay");
+
 // ARMOR
 #define ARMOR(name,rarity,price,color,mat1,mat2,volume,wgt,dam,to_hit,\
 encumber,dmg_resist,cut_resist,env,warmth,storage,covers,des)\

@@ -22,7 +22,8 @@ enum itype_id {
 itm_null = 0,
 itm_corpse,
 // Special pseudoitems
-itm_fire, itm_toolset, itm_forge, itm_grindstone, itm_sizzle,
+itm_fire, itm_toolset, itm_forge, itm_grindstone, itm_forgewater,
+itm_hot_crucible,
 // Drinks
 itm_water, itm_sewage, itm_salt_water, itm_oj, itm_apple_cider,
  itm_energy_drink, itm_cola, itm_rootbeer, itm_milk, itm_V8, itm_broth,
@@ -64,7 +65,8 @@ itm_wrapper, itm_syringe, itm_rag, itm_fur, itm_leather, itm_superglue,
  itm_wasp_sting, itm_chitin_piece, itm_biollante_bud, itm_canister_empty,
  itm_gold, itm_coal, itm_petrified_eye, itm_spiral_stone, itm_rapier, itm_cane,
  itm_binoculars, itm_usb_drive, itm_log, itm_splinter, itm_stake, itm_crossbar,
- itm_hog, itm_carbattery, itm_wire, itm_sheet,
+ itm_hog, itm_carbattery, itm_wire, itm_sheet, itm_carving_knife, itm_bellows,
+ itm_nailmold, itm_crucible, itm_clay,
 // Footwear
 itm_sneakers, itm_boots, itm_boots_steel, itm_boots_winter, itm_mocassins,
  itm_flip_flops, itm_dress_shoes, itm_heels,
