@@ -20,7 +20,6 @@ void setvector(std::vector<component> &vec, ... )
   n_tmp = (int)va_arg(ap, int);
   component tmp(it_tmp, n_tmp);
   vec.push_back(tmp);
-if (it_tmp == itm_chain) debugmsg ("count %d [size %d]", n_tmp, vec.size());
  }
  va_end(ap);
 }
