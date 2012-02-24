@@ -4324,8 +4324,17 @@ std::string player::weapname(bool charges)
   std::stringstream dump;
   dump << weapon.tname().c_str() << " (" << weapon.charges << ")";
   return dump.str();
- } else if (weapon.is_null())
-  return "fists";
+ } else if (weapon.is_null() && (!has_trait(PF_CLAWS)) && (!has_trait(PF_TALONS)) && (!has_trait(PF_ARM_TENTACLES))
+            && (!has_trait(PF_ARM_TENTACLES_4)) && (!has_trait(PF_ARM_TENTACLES_8) && (!has_trait(PF_PINCERS))))
+   return "fists";
+  else if (weapon.is_null() && (has_trait(PF_CLAWS)))
+  return "claws";
+  else if (weapon.is_null() && (has_trait(PF_TALONS)))
+  return "talons";
+  else if (weapon.is_null() && (has_trait(PF_ARM_TENTACLES)) || (has_trait(PF_ARM_TENTACLES_4)) || (has_trait(PF_ARM_TENTACLES_8)))
+  return "tentacles";
+  else if (weapon.is_null() && (has_trait(PF_PINCERS)))
+  return "pincers";
  else
   return weapon.tname();
 }

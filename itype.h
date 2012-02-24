@@ -22,8 +22,8 @@ enum itype_id {
 itm_null = 0,
 itm_corpse,
 // Special pseudoitems
-itm_fire, itm_toolset, itm_forge, itm_grindstone, itm_forgewater, itm_anvil,
-itm_hot_crucible,
+itm_fire, itm_toolset, itm_forge, itm_grindstone, itm_forgewater, itm_hot_crucible,
+itm_anvil,
 // Drinks
 itm_water, itm_sewage, itm_salt_water, itm_oj, itm_apple_cider,
  itm_energy_drink, itm_cola, itm_rootbeer, itm_milk, itm_V8, itm_broth,
@@ -143,7 +143,7 @@ itm_mag_porn, itm_mag_tv, itm_mag_news, itm_mag_cars, itm_mag_cooking,
 itm_bag_plastic, itm_bottle_plastic, itm_bottle_glass,
  itm_can_drink, itm_can_food, itm_box_small,
 // Tools
-itm_lighter, itm_sewing_kit, itm_scissors, itm_hammer, itm_extinguisher,
+itm_lighter, itm_sewing_kit, itm_scissors, itm_hammer, itm_smith_hammer, itm_extinguisher,
  itm_flashlight, itm_flashlight_on, itm_hotplate, itm_soldering_iron,
  itm_water_purifier, itm_two_way_radio, itm_radio, itm_radio_on, itm_crowbar,
  itm_hoe, itm_shovel, itm_chainsaw_off, itm_chainsaw_on, itm_jackhammer,

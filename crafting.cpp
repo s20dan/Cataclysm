@@ -542,51 +542,69 @@ RECIPE(itm_c4, CC_WEAPON, sk_mechanics, sk_electronics, 4, 8000);
   TOOL(itm_sewing_kit, 20, NULL);
   COMP(itm_rag, 20, itm_fur, 16, itm_leather, 12, NULL);
 
-// MISC
- 
- RECIPE(itm_dredge,    CC_MISC, sk_null,    sk_null, 0,  5000);
+// SMITHING
+ RECIPE(itm_dredge,    CC_SMITH, sk_null,    sk_null, 0,  5000);
   TOOL(itm_hammer, -1, itm_hatchet, -1, NULL);
   COMP(itm_hoe, 2, itm_shovel, 1, NULL);
   COMP(itm_2x4, 5, NULL);
   COMP(itm_stake, 4, itm_nail, 20, NULL);
 
- RECIPE(itm_charcoal,  CC_MISC, sk_null,    sk_null, 0, 10000);
+ RECIPE(itm_charcoal,  CC_SMITH, sk_null,    sk_null, 0, 10000);
   TOOL(itm_fire, -1, NULL);
   COMP(itm_2x4, 1, itm_stick, 1, itm_splinter, 1, NULL);
 
- RECIPE(itm_crucible,  CC_MISC, sk_null,    sk_null, 0, 10000);
+ RECIPE(itm_smith_hammer, CC_SMITH, sk_null,  sk_null, 0, 10000);
+  TOOL(itm_hammer, -1, NULL);
+  TOOL(itm_forge, -1, NULL);
+  TOOL(itm_anvil, -1, NULL);
+  COMP(itm_steel_chunk, 3, NULL);
+
+ RECIPE(itm_crucible,  CC_SMITH, sk_null,    sk_null, 0, 10000);
   TOOL(itm_fire, -1, NULL);
   COMP(itm_clay,  10, NULL);
   COMP(itm_stake, 2, NULL);
 
- RECIPE(itm_nail,      CC_MISC, sk_null,    sk_null, 0, 20000);
+ RECIPE(itm_nail,      CC_SMITH, sk_null,    sk_null, 0, 20000);
   TOOL(itm_forge, -1, NULL);
   TOOL(itm_shears, -1, NULL);
   TOOL(itm_anvil, -1, NULL);
+  TOOL(itm_lighter, 1, NULL);
   COMP(itm_knife_butter, 10, itm_knife_steak, 5, itm_knife_butcher, 2,
        itm_steel_chunk, 3, NULL);
   COMP(itm_water, 2, itm_forgewater, 1, NULL);
-  COMP(itm_charcoal, 3, NULL);
+  COMP(itm_charcoal, 1, NULL);
 
- RECIPE(itm_anvilmold,  CC_MISC, sk_null,    sk_null, 0, 20000);
+ RECIPE(itm_anvilmold,  CC_SMITH, sk_null,    sk_null, 0, 20000);
   TOOL(itm_fire, -1, NULL);
   TOOL(itm_knife_combat, -1, itm_knife_steak, -1, NULL);
   COMP(itm_clay, 15, NULL);
 
- RECIPE(itm_anvil,      CC_MISC, sk_null,    sk_null, 0, 10000);
+ RECIPE(itm_anvil_mobile,      CC_SMITH, sk_null,    sk_null, 0, 10000);
   TOOL(itm_crucible, -1, NULL);
   TOOL(itm_hammer, -1, itm_rock, -1, itm_hatchet, -1, NULL);
   TOOL(itm_lighter, 1, NULL);
-  COMP(itm_charcoal, 5, itm_coal, 5, NULL);
+  COMP(itm_charcoal, 3, itm_coal, 5, NULL);
   COMP(itm_steel_chunk, 15, itm_iron, 20, NULL);
 
- RECIPE(itm_shears,     CC_MISC, sk_null,    sk_null, 0, 5000);
+ RECIPE(itm_shears,     CC_SMITH, sk_null,    sk_null, 0, 5000);
   TOOL(itm_forge, -1, NULL);
   TOOL(itm_fire, -1, NULL);
   TOOL(itm_hammer, -1, itm_hatchet, -1, NULL);
   COMP(itm_pipe, 1, itm_steel_chunk, 1, NULL);
   COMP(itm_knife_butcher, 2, itm_knife_combat, 2, NULL);
-  COMP(itm_charcoal, 2, itm_coal, 2, NULL);
+  COMP(itm_charcoal, 1, NULL);
+
+ RECIPE(itm_steel_chunk, CC_SMITH, sk_null,   sk_null, 0, 7000);
+  TOOL(itm_crucible, -1, NULL);
+  TOOL(itm_lighter, 1, NULL);
+  TOOL(itm_forge, -1, NULL);
+  COMP(itm_charcoal, 1, NULL);
+  COMP(itm_knife_butter, 10, itm_knife_steak, 4, itm_knife_butcher, 2,
+       itm_chain, 1, itm_pipe, 1, itm_scissors, 5, itm_ax, 1,
+       itm_pickaxe, 1, itm_shovel, 1, itm_hoe, 1, itm_hammer_sledge, 1,
+       itm_wire, 5, NULL);
+ 
+// MISC
  RECIPE(itm_barricade, CC_MISC, sk_null,    sk_null, 0, 10000);
   TOOL(itm_hammer, -1, itm_hatchet, -1, itm_nailgun, -1, NULL);
   COMP(itm_2x4, 3, NULL);

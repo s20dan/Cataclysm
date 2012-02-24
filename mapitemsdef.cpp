@@ -395,6 +395,7 @@ void game::init_mapitems()
 	itm_novel_romance, itm_novel_spy, itm_novel_scifi, itm_novel_drama,
 	itm_SICP, itm_textbook_robots, itm_extinguisher, itm_radio,
 	itm_chainsaw_off, itm_jackhammer, itm_ring, itm_necklace, itm_usb_drive,
+        itm_dredge, itm_pickaxe, itm_clay,
 	NULL);
 
  setvector(

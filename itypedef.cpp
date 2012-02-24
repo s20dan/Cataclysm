@@ -1000,15 +1000,15 @@ MELEE("crucible",       0, 100, ';', c_ltgray, STONE, MNULL,
          15,  10,  3, 0, -2, 0, "\
 A large clay crucible, ready to be set up for smithing");
 
-MELEE("clay",       0, 100, ';', c_ltgray, STONE, MNULL,
+MELEE("clay",       10, 100, ';', c_ltgray, STONE, MNULL,
          2,  3,  3, 0, -2, 0, "\
 A lump of clay");
 
-MELEE("shears",     0, 100, ';', c_ltgray, STEEL, MNULL,
+MELEE("shears",     10, 100, ';', c_ltgray, STEEL, MNULL,
          4, 3,   0, 0,  -1, 0, "\
 A pair of sharp, sturdy, steel shears, for cutting metal.");
 
-MELEE("vise",       0, 100, ',', c_brown,  STEEL, MNULL,
+MELEE("vise",       10, 100, ',', c_brown,  STEEL, MNULL,
          2, 1,   1, 0,  -1, 0, "\
 A makeshift vise, used to hold things in place.");
 
@@ -2757,6 +2757,10 @@ TOOL("hammer",		35, 70, ';', c_brown,	IRON,	WOOD,
 Use a hammer, with nails and two by fours in your inventory, to board up\n\
 adjacent doors and windows.");
 
+TOOL("smithing hammer",		35, 70, ';', c_brown,	IRON,	WOOD,
+    4,  6, 22,  0,  1,   0,  0, 0,  0, AT_NULL, itm_null, &iuse::none, 0, "\
+A large hammer with a long handle and a flat face, perfect for smithing");
+
 //	NAME		RAR PRC	SYM  COLOR	MAT1	MAT
 TOOL("fire extinguisher",20,700,';', c_red,	IRON,	MNULL,
 // VOL WGT DAM CUT HIT MAX DEF USE SEC FUEL	REVERT	  FUNCTION
@@ -3170,7 +3174,7 @@ TOOL("cot",                   80, 1000,';',  c_green,   STEEL, MNULL,
         15,7,0, 4,   -5,  0,  0,  0, 0, AT_NULL, itm_null, &iuse::cot,0,"\
 A military style cot, folded up for transportation");
 
-TOOL("dredge",                   80, 1000,'/',  c_brown,   WOOD, STEEL,
+TOOL("dredge",                   30, 1000,'/',  c_brown,   WOOD, STEEL,
         15,7,0, 4,   -5,  0,  0,  0, 0, AT_NULL, itm_null, &iuse::dredge,0,"\
 It's shaped a bit like a plough, it's used for bog iron dredging");
 // BIONICS

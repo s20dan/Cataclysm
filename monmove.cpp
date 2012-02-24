@@ -241,7 +241,7 @@ void monster::move(game *g)
    g->m.destroy(g, next.x, next.y, true);
    moves -= 250;
   } else if (can_move_to(g->m, next.x, next.y) && g->is_empty(next.x, next.y))
-   move_to(g, next.x, next.y);
+  move_to(g, next.x, next.y);
   else
    moves -= 100;
  }
@@ -514,7 +514,7 @@ void monster::move_to(game *g, int x, int y)
   moves -= 100;
   }
   if (g->m.has_flag(electric, x, y)); {
-  hurt(rng(10, 50));
+  hurt(rng(20, 30));
   moves -= 400;
    }
   }
