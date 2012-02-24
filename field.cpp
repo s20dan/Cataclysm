@@ -560,7 +560,7 @@ void map::step_in_field(int x, int y, game *g)
     g->u.hit(g, bp_legs, 0, 0, rng(2,  8));
     g->u.hit(g, bp_legs, 1, 0, rng(2,  8));
    } else {
-       if (!g->u.has_trait(PF_ACID_RESIST) || !g->u.has_trait(PF_ACID_IMMUNE)) {
+       if (!g->u.has_trait(PF_ACID_RESIST)) {
     g->add_msg("The acid burns your feet!");
     g->u.hit(g, bp_feet, 0, 0, rng(cur->density, 4 * cur->density));
     g->u.hit(g, bp_feet, 1, 0, rng(cur->density, 4 * cur->density));
