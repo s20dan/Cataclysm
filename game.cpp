@@ -413,7 +413,7 @@ void game::start_game()
  u.per_cur = u.per_max;
  u.int_cur = u.int_max;
  u.dex_cur = u.dex_max;
- nextspawn = int(turn);	
+ nextspawn = int(turn);
  temperature = 65; // Springtime-appropriate?
 
 // Put some NPCs in there!
@@ -519,12 +519,12 @@ void game::create_starting_npcs()
  if (one_in(2))
   tmp.chatbin.missions.push_back( reserve_mission(MISSION_GET_SOFTWARE, tmp.id));
  else
-  tmp.chatbin.missions.push_back( 
+  tmp.chatbin.missions.push_back(
       reserve_random_mission(ORIGIN_OPENER_NPC, om_location(), tmp.id) );
 
  active_npc.push_back(tmp);
 }
- 
+
 
 // MAIN GAME LOOP
 // Returns true if game is over (death, saved, quit, etc)
@@ -927,7 +927,7 @@ void game::assign_mission(int id)
  mission *miss = find_mission(id);
  (m_s.*miss->type->start)(this, miss);
 }
- 
+
 int game::reserve_mission(mission_id type, int npc_id)
 {
  mission tmp = mission_types[type].create(this, npc_id);
@@ -1192,6 +1192,8 @@ void game::get_input()
   plfire(true);
  else if (ch == 'C')
   chat();
+ else if (ch == 'v')
+  display_scent_mutation();
  else if (ch == 'Z')
   debug();
  else if (ch == '-')
@@ -1938,7 +1940,7 @@ void game::list_missions()
   for (int i = 0; i < umissions.size(); i++) {
    mission *miss = find_mission(umissions[i]);
    nc_color col = c_white;
-   if (i == u.active_mission && tab == 0) 
+   if (i == u.active_mission && tab == 0)
     col = c_ltred;
    if (selection == i)
     mvwprintz(w_missions, 3 + i, 0, hilite(col), miss->name().c_str());
@@ -2331,7 +2333,7 @@ unsigned char game::light_level()
  int flashlight = u.active_item_charges(itm_flashlight_on);
  //int light = u.light_items();
  if (ret < 10 && flashlight > 0) {
-/* additive so that low battery flashlights still increase the light level 
+/* additive so that low battery flashlights still increase the light level
 	rather than decrease it 						*/
   ret += flashlight;
   if (ret > 10)
@@ -2341,6 +2343,8 @@ unsigned char game::light_level()
   ret = 8;
  if (ret < 4 && u.has_artifact_with(AEP_GLOW))
   ret = 4;
+ if (ret < 4 && u.has_trait(PF_BIO_LUM))
+  ret = 6;
  if (ret < 1)
   ret = 1;
  return ret;
@@ -2414,7 +2418,8 @@ faction* game::random_evil_faction()
 bool game::sees_u(int x, int y, int &t)
 {
  return (!u.has_active_bionic(bio_cloak) &&
-         !u.has_artifact_with(AEP_INVISIBLE) && 
+         !u.has_artifact_with(AEP_INVISIBLE) &&
+         !u.has_trait(PF_CHAMELEON_SCALES) &&
          m.sees(x, y, u.posx, u.posy, light_level(), t));
 }
 
@@ -2811,7 +2816,7 @@ void game::check_warmth()
   add_msg("Your body is cold.");
   u.add_disease(DI_COLD, abs(warmth), this);
  } else if (warmth >= 12) {
-  add_msg("Your body is too hot."); 
+  add_msg("Your body is too hot.");
   u.add_disease(DI_HOT, warmth * 2, this);
  }
  // HANDS
@@ -2887,6 +2892,8 @@ void game::sound(int x, int y, int vol, std::string description)
   vol *= .5;
  if (u.has_trait(PF_CANINE_EARS))
   vol *= 1.5;
+ if (u.has_trait(PF_EAR_HOLES))
+  vol *= .7;
  int dist = rl_dist(x, y, u.posx, u.posy);
  if (dist > vol)
   return;	// Too far away, we didn't hear it!
@@ -2951,7 +2958,7 @@ void game::add_footstep(int x, int y, int volume, int distance)
 void game::draw_footsteps()
 {
  for (int i = 0; i < footsteps.size(); i++) {
-  mvwputch(w_terrain, SEEY + footsteps[i].y - u.posy, 
+  mvwputch(w_terrain, SEEY + footsteps[i].y - u.posy,
            SEEX + footsteps[i].x - u.posx, c_yellow, '?');
  }
  footsteps.clear();
@@ -3121,8 +3128,9 @@ void game::flashbang(int x, int y)
 
 void game::use_computer(int x, int y)
 {
- if (u.has_trait(PF_ILLITERATE)) {
-  add_msg("You can not read a computer screen!");
+ if (u.has_trait(PF_ILLITERATE) || (u.has_trait(PF_CROSSEYED))) {
+  add_msg("%s"),
+    (u.has_trait(PF_ILLITERATE) ? "You can not read a computer screen!" : "You can't focus on the computer screen!");
   return;
  }
  computer* used = m.computer_at(x, y);
@@ -3131,7 +3139,7 @@ void game::use_computer(int x, int y)
   debugmsg("Tried to use computer at (%d, %d) - none there", x, y);
   return;
  }
- 
+
  used->use(this);
 
  refresh_all();
@@ -3873,6 +3881,92 @@ void game::examine()
    u.moves -= 300;
    handle_liquid(gas, false, true);
   }
+ } else if (m.ter(examx, examy) == t_cot && query_yn("Fold up cot?")) {
+  item cot(itypes[itm_cot], turn);
+  m.add_item(u.posx, u.posy, cot);
+  add_msg("You fold up the cot");
+  u.moves -=50;
+  m.ter(examx, examy) = t_floor;
+ } else if (m.ter(examx, examy) == t_wreckage &&
+            query_yn("Sift through the wreckage?")) {
+  add_msg("You look for anything useful");
+  item chunk(itypes[itm_steel_chunk], turn);
+  item pipe(itypes[itm_pipe], turn);
+   u.moves -=100;
+    if (one_in(u.dex_cur)) {
+     add_msg("You cut your hands!");
+     u.hit(this, bp_hands, 0, 0, rng(1, 4));
+ } if (one_in(4)) {
+    add_msg("You find a chunk of steel!");
+    m.add_item(u.posx, u.posy, chunk);
+    m.ter(examx, examy) = t_dirt;
+ } else if (one_in(8)) {
+    add_msg("You find a pipe");
+    m.add_item(u.posx, u.posy, pipe);
+    m.ter(examx, examy) = t_dirt;
+ } else {
+   add_msg("You can find nothing of use");
+   m.ter(examx, examy) = t_dirt;
+  }
+ } else if (m.ter(examx, examy) == t_groundsheet &&
+            query_yn("Take down tent?")) {
+   add_msg("You take down your tent.");
+    item tent(itypes[itm_tent], turn);
+    m.ter(examx, examy) = t_dirt;
+    m.ter(examx +1, examy) = t_dirt;
+    m.ter(examx -1, examy) = t_dirt;
+    m.ter(examx -1, examy +1) = t_dirt;
+    m.ter(examx +1, examy -1) = t_dirt;
+    m.ter(examx -1, examy -1) = t_dirt;
+    m.ter(examx +1, examy +1) = t_dirt;
+    m.ter(examx, examy +1) = t_dirt;
+    m.ter(examx, examy -1) = t_dirt;
+    u.moves -= 1000;
+    m.add_item(examx, examy, tent);
+ } else if (m.ter(examx, examy) == t_awnsheet && query_yn("Take down awning?")) {
+   add_msg("You disassemble the awning.");
+    item awning(itypes[itm_awning], turn);
+    m.ter(examx, examy) = t_dirt;
+    m.ter(examx +1, examy) = t_dirt;
+    m.ter(examx -1, examy) = t_dirt;
+    m.ter(examx -1, examy +1) = t_dirt;
+    m.ter(examx +1, examy -1) = t_dirt;
+    m.ter(examx -1, examy -1) = t_dirt;
+    m.ter(examx +1, examy +1) = t_dirt;
+    m.ter(examx, examy +1) = t_dirt;
+    m.ter(examx, examy -1) = t_dirt;
+    u.moves -= 1000;
+    m.add_item(examx, examy, awning);
+ } else if (m.ter(examx, examy) == t_pit && query_yn("Place a 2x4 over that pit?")) {
+  if (u.has_amount(itm_2x4, 1)) {
+   m.ter(examx, examy) = t_pit_bridge;
+   u.use_amount(itm_2x4, 1);
+   u.moves -= 100;
+   m.tr_at(examx, examy) = tr_null;
+   } else {
+  add_msg("You need a 2x4");
+  }
+ } else if (m.ter(examx, examy) == t_pit_spiked && query_yn("Place a 2x4 over that pit?")) {
+  if (u.has_amount(itm_2x4, 1)) {
+   m.ter(examx, examy) = t_s_pit_bridge;
+   u.use_amount(itm_2x4, 1);
+   u.moves -= 100;
+   m.tr_at(examx, examy) = tr_null;
+   } else {
+  add_msg("You need a 2x4");
+  }
+ } else if (m.ter(examx, examy) == t_pit_bridge && query_yn("Remove that 2x4?")) {
+  item board(itypes[itm_2x4], turn);
+   m.ter(examx, examy) = t_pit;
+   m.add_trap(examx, examy, tr_pit);
+   m.add_item(u.posx, u.posy, board);
+   u.moves -= 100;
+ } else if (m.ter(examx, examy) == t_s_pit_bridge && query_yn("Remove that 2x4?")) {
+  item board(itypes[itm_2x4], turn);
+   m.ter(examx, examy) = t_pit_spiked;
+   m.add_trap(examx, examy, tr_spike_pit);
+   m.add_item(u.posx, u.posy, board);
+   u.moves -= 100;
  } else if (m.ter(examx, examy) == t_slot_machine) {
   if (u.cash < 10)
    add_msg("You need $10 to play.");
@@ -5567,6 +5661,17 @@ void game::plmove(int x, int y)
     u.hit(this, bp_torso, 0, 0, rng(1, 4));
    }
   }
+  if (m.has_flag(razor, x, y) && !one_in(2) && !one_in(80 - int(u.dex_cur/2))) {
+   if (!u.has_trait(PF_PARKOUR) || one_in(3)) {
+    add_msg("You badly cut yourself on the %s!", m.tername(x, y).c_str());
+    u.hit(this, bp_torso, 0, 0, rng(10, 20));
+   }
+  }
+  if (m.has_flag(electric, x, y)) {
+    add_msg("The %s electrocutes you!", m.tername(x, y).c_str());
+    u.hit(this, bp_torso, 0, 0, rng(10, 20));
+    u.moves -= 400;
+   }
   if (!u.has_artifact_with(AEP_STEALTH) && !u.has_trait(PF_LEG_TENTACLES)) {
    if (u.has_trait(PF_LIGHTSTEP))
     sound(x, y, 2, "");	// Sound of footsteps may awaken nearby monsters
@@ -5900,13 +6005,13 @@ void game::vertical_move(int movez, bool force)
    stairy = u.posy;
   }
  }
- 
+
  bool replace_monsters = false;
 // Replace the stair monsters if we just came back
  if (abs(monstairx - levx) <= 1 && abs(monstairy - levy) <= 1 &&
      monstairz == levz)
   replace_monsters = true;
- 
+
  if (!force) {
   monstairx = levx;
   monstairy = levy;
@@ -6103,7 +6208,7 @@ void game::update_map(int &x, int &y)
   npc temp;
   for (int i = 0; i < cur_om.npcs.size(); i++) {
    if (rl_dist(levx + int(MAPSIZE / 2), levy + int(MAPSIZE / 2),
-               cur_om.npcs[i].mapx, cur_om.npcs[i].mapy) <= 
+               cur_om.npcs[i].mapx, cur_om.npcs[i].mapy) <=
                int(MAPSIZE / 2) + 1) {
     int dx = cur_om.npcs[i].mapx - levx, dy = cur_om.npcs[i].mapy - levy;
     if (debugmon)
@@ -6644,6 +6749,30 @@ nc_color sev(int a)
 void game::display_scent()
 {
  int div = query_int("Sensitivity");
+ draw_ter();
+ for (int x = u.posx - SEEX; x <= u.posx + SEEX; x++) {
+  for (int y = u.posy - SEEY; y <= u.posy + SEEY; y++) {
+   int sn = scent(x, y) / (div * 2);
+   mvwprintz(w_terrain, SEEY + y - u.posy, SEEX + x - u.posx, sev(sn), "%d",
+             sn % 10);
+  }
+ }
+ wrefresh(w_terrain);
+ getch();
+}
+
+void game::display_scent_mutation()
+{
+ int div = 0;
+ if (u.has_trait(PF_FORKED_TONGUE)) {
+        div += 3;
+ }
+ if (u.has_trait(PF_CANINE_NOSE)) {
+    div += 2;
+ }
+ if (!u.has_trait(PF_CANINE_NOSE) && !u.has_trait(PF_FORKED_TONGUE)) {
+    return;
+ }
  draw_ter();
  for (int x = u.posx - SEEX; x <= u.posx + SEEX; x++) {
   for (int y = u.posy - SEEY; y <= u.posy + SEEY; y++) {

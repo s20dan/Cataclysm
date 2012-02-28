@@ -10,6 +10,7 @@
 enum craft_cat {
 CC_NULL = 0,
 CC_WEAPON,
+CC_SMITH,
 CC_FOOD,
 CC_ELECTRONIC,
 CC_ARMOR,
