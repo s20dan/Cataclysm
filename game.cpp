@@ -356,7 +356,7 @@ fivedozenwhales@gmail.com.");
      mvwprintw(w_open, i, 0, "                                                 \
                                 ");
    }
-   if (ch == 'l' || ch == '\n' || ch == '>') {
+   if ((ch == 'l' || ch == '\n' || ch == '>') && templates.size() > 0) {
     if (!u.create(this, PLTYPE_TEMPLATE, templates[sel1])) {
      u = player();
      delwin(w_open);
@@ -1196,8 +1196,6 @@ void game::get_input()
   display_scent_mutation();
  else if (ch == 'Z')
   debug();
- else if (ch == '-')
-  display_scent();
  else if (ch == '~') {
   debugmon = !debugmon;
   add_msg("Debug messages %s!", (debugmon ? "ON" : "OFF"));
@@ -1403,14 +1401,18 @@ bool game::load_master()
   return false;
 
  char datatype;
+
+ fin >> datatype;
+ getline(fin, data);
+
  while (!fin.eof()) {
-  fin >> datatype;
   if (datatype == 'F') {
-   getline(fin, data);
    faction tmp;
    tmp.load_info(data);
    factions.push_back(tmp);
   }
+  fin >> datatype;
+  getline(fin, data);
  }
  fin.close();
  return true;
@@ -1602,30 +1604,51 @@ bool game::event_queued(event_type type)
 
 void game::debug()
 {
- int action = menu("Debug Functions - Using these is CHEATING!",
-                   "Wish for an item",       // 1
-                   "Teleport - Short Range", // 2
-                   "Teleport - Long Range",  // 3
-                   "Reveal map",             // 4
-                   "Spawn NPC",              // 5
-                   "Spawn Monster",          // 6
-                   "Check game state...",    // 7
-                   "Kill NPCs",              // 8
-                   "Mutate",                 // 9
-                   "Spawn vehicle",          // 10
-                   "Cancel",                 // 11
-                   NULL);
- int veh_num;
- switch (action) {
-  case 1:
+ WINDOW* w = newwin(14, 45, 6, 10);
+ wattron(w, c_white);
+ wborder(w, LINE_XOXO, LINE_XOXO, LINE_OXOX, LINE_OXOX,
+            LINE_OXXO, LINE_OOXX, LINE_XXOO, LINE_XOOX );
+
+ mvwprintw(w, 1, 1,  "Debug Functions - Using these is CHEATING!");
+ mvwprintw(w, 2, 1,  "1: Wish for an item");
+ mvwprintw(w, 3, 1,  "2: Teleport - Short Range");
+ mvwprintw(w, 4, 1,  "3: Teleport - Long Range");
+ mvwprintw(w, 5, 1,  "4: Reveal map");
+ mvwprintw(w, 6, 1,  "5: Spawn NPC");
+ mvwprintw(w, 7, 1,  "6: Spawn Monster");
+ mvwprintw(w, 8, 1,  "7: Check game state...");
+ mvwprintw(w, 9, 1,  "8: Kill NPCs");
+ mvwprintw(w, 10, 1, "9: Mutate");
+ mvwprintw(w, 11, 1, "10: Display Scent Map...");
+ mvwprintw(w, 12, 1, "11: Spawn Field...");
+ mvwprintw(w, 12, 1, "12: Spawn vehicle");
+
+ wrefresh(w);
+
+ long ch = getch();
+
+ if(ch == KEY_ESCAPE)
+  return;
+
+ werase(w);
+ wrefresh(w);
+ delwin(w);
+ 
+ refresh_all();
+ wrefresh(w_terrain);
+
+ switch (ch) {
+  case '1':
    wish();
    break;
 
-  case 2:
-   teleport();
+  case '2': {
+   point p = look_around();
+   teleport(&u, p.x, p.y);
    break;
+  }
 
-  case 3: {
+  case '3': {
    point tmp = cur_om.choose_point(this);
    if (tmp.x != -1) {
     z.clear();
@@ -1636,7 +1659,7 @@ void game::debug()
    }
   } break;
 
-  case 4:
+  case '4':
    debugmsg("%d radio towers", cur_om.radios.size());
    for (int i = 0; i < OMAPX; i++) {
     for (int j = 0; j < OMAPY; j++)
@@ -1644,7 +1667,7 @@ void game::debug()
    }
    break;
 
-  case 5: {
+  case '5': {
    npc temp;
    temp.randomize(this);
    temp.attitude = NPCATT_TALK;
@@ -1654,11 +1677,11 @@ void game::debug()
    active_npc.push_back(temp);
   } break;
 
-  case 6:
+  case '6':
    monster_wish();
    break;
 
-  case 7:
+  case '7':
    popup_top("\
 Location %d:%d in %d:%d, %s\n\
 Current turn: %d; Next spawn %d.\n\
@@ -1671,18 +1694,26 @@ int(turn), int(nextspawn), z.size(), events.size());
               active_npc[0].posx, active_npc[0].posy, u.posx, u.posy);
    break;
 
-  case 8:
+  case '8':
    for (int i = 0; i < active_npc.size(); i++) {
     add_msg("%s's head implodes!", active_npc[i].name.c_str());
     active_npc[i].hp_cur[bp_head] = 0;
    }
    break;
 
-  case 9:
+  case '9':
    mutation_wish();
    break;
 
-  case 10:
+  case '10':
+   display_scent();
+   break;
+   
+  case '11':
+   field_wish();
+   break;
+
+  case 12:
    if (m.veh_at(u.posx, u.posy).type != veh_null)
    {
        debugmsg ("There's already vehicle here");
@@ -1692,7 +1723,6 @@ int(turn), int(nextspawn), z.size(), events.size());
    if (veh_num > 0 && veh_num < num_vehicles)
     m.add_vehicle ((vhtype_id)veh_num, u.posx, u.posy, -90);
    break;
-
  }
  erase();
  refresh_all();
@@ -3811,44 +3841,46 @@ void game::examine()
    add_msg("The nearby doors slide into the floor.");
    u.use_amount(card_type, 1);
   }
-  bool using_electrohack = (u.has_amount(itm_electrohack, 1) &&
-                            query_yn("Use electrohack on the reader?"));
-  bool using_fingerhack = (!using_electrohack && u.has_bionic(bio_fingerhack) &&
-                           u.power_level > 0 &&
-                           query_yn("Use fingerhack on the reader?"));
-  if (using_electrohack || using_fingerhack) {
-   u.moves -= 500;
-   u.practice(sk_computer, 20);
-   int success = rng(u.sklevel[sk_computer]/4 - 2, u.sklevel[sk_computer] * 2);
-   success += rng(-3, 3);
-   if (using_fingerhack)
-    success++;
-   if (u.int_cur < 8)
-    success -= rng(0, int((8 - u.int_cur) / 2));
-   else if (u.int_cur > 8)
-    success += rng(0, int((u.int_cur - 8) / 2));
-   if (success < 0) {
-    add_msg("You cause a short circuit!");
-    if (success <= -5) {
-     if (using_electrohack) {
-      add_msg("Your electrohack is ruined!");
-      u.use_amount(itm_electrohack, 1);
-     } else {
-      add_msg("Your power is drained!");
-      u.charge_power(0 - rng(0, u.power_level));
+  else { //If we already selected ID, don't try to hack.
+   bool using_electrohack = (u.has_amount(itm_electrohack, 1) &&
+                             query_yn("Use electrohack on the reader?"));
+   bool using_fingerhack = (!using_electrohack && u.has_bionic(bio_fingerhack) &&
+                            u.power_level > 0 &&
+                            query_yn("Use fingerhack on the reader?"));
+   if (using_electrohack || using_fingerhack) {
+    u.moves -= 500;
+    u.practice(sk_computer, 20);
+    int success = rng(u.sklevel[sk_computer]/4 - 2, u.sklevel[sk_computer] * 2);
+    success += rng(-3, 3);
+    if (using_fingerhack)
+     success++;
+    if (u.int_cur < 8)
+     success -= rng(0, int((8 - u.int_cur) / 2));
+    else if (u.int_cur > 8)
+     success += rng(0, int((u.int_cur - 8) / 2));
+    if (success < 0) {
+     add_msg("You cause a short circuit!");
+     if (success <= -5) {
+      if (using_electrohack) {
+       add_msg("Your electrohack is ruined!");
+       u.use_amount(itm_electrohack, 1);
+      } else {
+       add_msg("Your power is drained!");
+       u.charge_power(0 - rng(0, u.power_level));
+      }
      }
-    }
-    m.ter(examx, examy) = t_card_reader_broken;
-   } else if (success < 6)
-    add_msg("Nothing happens.");
-   else {
-    add_msg("You activate the panel!");
-    add_msg("The nearby doors slide into the floor.");
-    m.ter(examx, examy) = t_card_reader_broken;
-    for (int i = -3; i <= 3; i++) {
-     for (int j = -3; j <= 3; j++) {
-      if (m.ter(examx + i, examy + j) == t_door_metal_locked)
-       m.ter(examx + i, examy + j) = t_floor;
+     m.ter(examx, examy) = t_card_reader_broken;
+    } else if (success < 6)
+     add_msg("Nothing happens.");
+    else {
+     add_msg("You activate the panel!");
+     add_msg("The nearby doors slide into the floor.");
+     m.ter(examx, examy) = t_card_reader_broken;
+     for (int i = -3; i <= 3; i++) {
+      for (int j = -3; j <= 3; j++) {
+       if (m.ter(examx + i, examy + j) == t_door_metal_locked)
+        m.ter(examx + i, examy + j) = t_floor;
+      }
      }
     }
    }
@@ -5040,8 +5072,11 @@ void game::plfire(bool burst)
  // target() sets x and y, and returns an empty vector if we canceled (Esc)
  std::vector <point> trajectory = target(x, y, x0, y0, x1, y1, mon_targets,
                                          passtarget, &u.weapon);
- if (trajectory.size() == 0)
+ if (trajectory.size() == 0) {
+  if(u.weapon.has_flag(IF_RELOAD_AND_SHOOT))
+   unload(); //If this is a bow or something, unload our ammo because we're canceling the shot.
   return;
+ }
  if (passtarget != -1) { // We picked a real live target
   last_target = targetindices[passtarget]; // Make it our default for next time
   z[targetindices[passtarget]].add_effect(ME_HIT_BY_PLAYER, 100);
@@ -6624,32 +6659,43 @@ void game::teleport(player *p)
 {
  if (p == NULL)
   p = &u;
- int newx, newy, t, tries = 0;
+    
+ int newx, newy, tries = 0;
+ 
+ do {
+ newx = p->posx + rng(0, SEEX * 2) - SEEX;
+ newy = p->posy + rng(0, SEEY * 2) - SEEY;
+ tries++;
+ } while (tries < 15 && !is_empty(newx, newy));
+ 
+ if(is_empty(newx, newy))
+  teleport(p, newx, newy);
+}
+
+void game::teleport(player *p, int x, int y)
+{ 
+ int t;
  bool is_u = (p == &u);
  p->add_disease(DI_TELEGLOW, 300, this);
- do {
-  newx = p->posx + rng(0, SEEX * 2) - SEEX;
-  newy = p->posy + rng(0, SEEY * 2) - SEEY;
-  tries++;
- } while (tries < 15 && !is_empty(newx, newy));
- bool can_see = (is_u || u_see(newx, newy, t));
+
+ bool can_see = (is_u || u_see(x, y, t));
  std::string You = (is_u ? "You" : p->name);
- p->posx = newx;
- p->posy = newy;
- if (tries == 15) {
-  if (m.move_cost(newx, newy) == 0) {	// TODO: If we land in water, swim
-   if (can_see)
-    add_msg("%s teleport%s into the middle of a %s!", You.c_str(),
-            (is_u ? "" : "s"), m.tername(newx, newy).c_str());
-   p->hurt(this, bp_torso, 0, 500);
-  } else if (mon_at(newx, newy) != -1) {
-   int i = mon_at(newx, newy);
-   if (can_see)
-    add_msg("%s teleport%s into the middle of a %s!", You.c_str(),
-            (is_u ? "" : "s"), z[i].name().c_str());
-   explode_mon(i);
-  }
+ p->posx = x;
+ p->posy = y;
+
+ if (m.move_cost(x, y) == 0) {	// TODO: If we land in water, swim
+  if (can_see)
+   add_msg("%s teleport%s into the middle of a %s!", You.c_str(),
+           (is_u ? "" : "s"), m.tername(x, y).c_str());
+  p->hurt(this, bp_torso, 0, 500);
+ } else if (mon_at(x, y) != -1) {
+  int i = mon_at(x, y);
+  if (can_see)
+   add_msg("%s teleport%s into the middle of a %s!", You.c_str(),
+           (is_u ? "" : "s"), z[i].name().c_str());
+  explode_mon(i);
  }
+ 
  if (is_u)
   update_map(u.posx, u.posy);
 }
@@ -6749,6 +6795,11 @@ nc_color sev(int a)
 void game::display_scent()
 {
  int div = query_int("Sensitivity");
+
+ // Avoid dividing by zero further on.
+ if(div == 0)
+  return;
+
  draw_ter();
  for (int x = u.posx - SEEX; x <= u.posx + SEEX; x++) {
   for (int y = u.posy - SEEY; y <= u.posy + SEEY; y++) {

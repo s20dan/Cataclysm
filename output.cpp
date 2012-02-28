@@ -1,6 +1,3 @@
-#ifndef _OUTPUT_H_
-#define _OUTPUT_H_
-
 #if (defined _WIN32 || defined WINDOWS)
 	#include "catacurse.h"
 #else
@@ -12,6 +9,7 @@
 #include <cstdarg>
 #include <cstring>
 #include <stdlib.h>
+#include <cmath>
 #include "color.h"
 #include "output.h"
 #include "rng.h"
@@ -293,6 +291,12 @@ void debugmsg(const char *mes, ...)
  mvprintw(0, 0, "DEBUG: %s                \n  Press spacebar...", buff);
  while(getch() != ' ');
  attroff(c_red);
+}
+
+// For using real strings
+void debugmsg(std::string mes)
+{
+ debugmsg(mes.c_str());
 }
 
 bool query_yn(const char *mes, ...)
@@ -687,6 +691,87 @@ void full_screen_popup(const char* mes, ...)
  refresh();
 }
 
+// Generic function that prompts the player to select one of several strings in a vector. Returns -1 if canceled/error, otherwise returns selected vector index.
+int select_item(const std::string &heading, const std::vector<std::string> *items)
+{
+    
+ if(items == NULL) {
+  debugmsg("NULL pointer sent to select_item");
+  return -1;
+ }
+ 
+ if(items->size() == 0) {
+  debugmsg("Empty vector sent to select_item");
+  return -1;
+ }
+ 
+ const int size = items->size();
+ 
+ // Set height to size of items list, cap at 10. Add +2 for borders.
+ int height = std::min(10 + 2, size + 2);
+ 
+ // Set width to match our longest string, either from heading or from items. Add +2 for borders.
+ int width = heading.length() + 2;
+ for(int i = 0; i < size; i++)
+  width = std::max(width, (int) (*items)[i].length() + 2);
+  
+ // Center window on screen
+ int x = std::max(0, (80 / 2) - (width / 2));
+ int y = std::max(0, (25 / 2) - (height / 2));
+ 
+ WINDOW *w_select = newwin(height, width, y, x);
+ 
+ int a = 0, offset = 0, ret = -1;
+ nc_color col;
+ long ch;
+ 
+ 
+ while(true) {
+  wclear(w_select);
+  wborder(w_select, LINE_XOXO, LINE_XOXO, LINE_OXOX, LINE_OXOX, LINE_OXXO, LINE_OOXX, LINE_XXOO, LINE_XOOX );
+ 
+  for(int i = 0; i < (height-3) && i < size; i++) { // Borders and heading take up 3 lines. Height-3 means height of the actual item list on screen.
+   col = ((i + offset) == a ? h_white : c_white);
+ 
+   mvwprintw(w_select, 1, 1, heading.c_str());
+ 
+   mvwprintz(w_select, 2 + i, 1, col,(*items)[i+offset].c_str());
+  }
+ 
+  wrefresh(w_select);
+ 
+  ch = input();
+ 
+  if(ch == 'j') {
+   a = (++a < (size-1) ? a : (size-1) ); // cap a at index of last element in items
+ 
+   if(a-offset >= (height-3)) // Borders and heading take up 3 lines. Height-3 means height of the actual item list on screen.
+    offset++;
+  }
+ 
+  if(ch == 'k') {
+   a = (--a > 0 ? a : 0);
+ 
+   if(a < offset)
+    offset--;
+  }
+ 
+  if(ch == KEY_ESCAPE)
+   break;
+ 
+  if(ch == '\n') {
+   ret = a;
+   break;
+  }
+ }
+ 
+ werase(w_select);
+ wrefresh(w_select);
+ delwin(w_select);
+ 
+ return ret;
+}
+
 char rand_char()
 {
  switch (rng(0, 9)) {
@@ -703,4 +788,3 @@ char rand_char()
  }
  return '?';
 }
-#endif

@@ -125,6 +125,7 @@ class game
   void process_missions(); // Process missions, see if time's run out
 
   void teleport(player *p = NULL);
+  void teleport(player *p, int x, int y);
   void plswim(int x, int y); // Called by plmove.  Handles swimming
   // when player is thrown (by impact or something)
   void fling_player_or_monster(player *p, monster *zz, int dir, int impulse);
@@ -221,6 +222,7 @@ class game
   void wish();	// Cheat by wishing for an item 'Z'
   void monster_wish(); // Create a monster
   void mutation_wish(); // Mutate
+  void field_wish(); // Allows player to spawn a field type at a selected point near the player.
 
   void pldrive(int x, int y); // drive vehicle
   void plmove(int x, int y); // Standard movement; handles attacks, traps, &c

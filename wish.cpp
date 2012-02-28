@@ -28,7 +28,7 @@ void game::wish()
     search = false;
     found = true;
     ch = '.';
-   } else if (ch == KEY_BACKSPACE || ch == 127) {
+   } else if (ch == KEY_BACKSPACE || ch == 127 || ch == 7) { // backspace seems to be processed as 7 (\a) on some debian systems.
     if (pattern.length() > 0)
      pattern.erase(pattern.end() - 1);
    } else if (ch == '>') {
@@ -85,7 +85,7 @@ void game::wish()
   } else {	// Not searching; scroll by keys
    if (ch == 'j') a++;
    if (ch == 'k') a--;
-   if (ch == '/') { 
+   if (ch == '/') {
     search = true;
     pattern =  "";
     found = false;
@@ -236,7 +236,7 @@ void game::monster_wish()
    if (ch == 'j') a++;
    if (ch == 'k') a--;
    if (ch == 'f') friendly = !friendly;
-   if (ch == '/') { 
+   if (ch == '/') {
     search = true;
     pattern =  "";
     found = false;
@@ -386,7 +386,7 @@ void game::mutation_wish()
   } else {	// Not searching; scroll by keys
    if (ch == 'j') a++;
    if (ch == 'k') a--;
-   if (ch == '/') { 
+   if (ch == '/') {
     search = true;
     pattern =  "";
     found = false;
@@ -470,4 +470,26 @@ void game::mutation_wish()
   u.mutate_towards(this, pl_flag(a + shift));
  delwin(w_info);
  delwin(w_list);
+}
+
+// Allows player to spawn a field type at a selected point near the player.
+void game::field_wish()
+{
+ std::vector<std::string> vec;
+ 
+ for(int i = 0; i < num_fields; i++) {
+  if(i == fd_fire_vent)
+   vec.push_back("fire vent"); // Fire vent doesn't have any display name, this hack adds one to the selection list.
+  else if(i == fd_null)
+   vec.push_back("null field"); // Ditto for null field
+  else
+   vec.push_back(fieldlist[i].name[2]);
+ }
+ 
+ field_id id = (field_id) select_item("Select a field: ", &vec);
+ 
+ if(id != -1) {
+  point spawn = look_around();
+  m.add_field(this, spawn.x, spawn.y, id, 3);
+ }
 }
