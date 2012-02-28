@@ -1636,7 +1636,8 @@ void game::debug()
  
  refresh_all();
  wrefresh(w_terrain);
-
+ int veh_num;
+ 
  switch (ch) {
   case '1':
    wish();
@@ -1713,7 +1714,7 @@ int(turn), int(nextspawn), z.size(), events.size());
    field_wish();
    break;
 
-  case 12:
+  case '12':
    if (m.veh_at(u.posx, u.posy).type != veh_null)
    {
        debugmsg ("There's already vehicle here");
