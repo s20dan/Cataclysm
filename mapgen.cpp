@@ -1170,7 +1170,7 @@ void map::draw_map(oter_id terrain_type, oter_id t_north, oter_id t_east,
 
  case ot_s_lot:
   for (int i = 0; i < SEEX * 2; i++) {
-   for (int j = 0; j < SEEX * 2; j++) {
+   for (int j = 0; j < SEEY * 2; j++) {
     if ((j == 5 || j == 9 || j == 13 || j == 17 || j == 21) &&
         ((i > 1 && i < 8) || (i > 14 && i < SEEX * 2 - 2)))
      ter(i, j) = t_pavement_y;
@@ -1188,6 +1188,12 @@ void map::draw_map(oter_id terrain_type, oter_id t_north, oter_id t_east,
    rotate(2);
   if (t_west  >= ot_road_null && t_west  <= ot_road_nesw_manhole)
    rotate(3);
+  if (one_in(2))
+  {
+      int vx = rng (0, 4) * 4 + 5;
+      int vy = 4;
+      add_vehicle (one_in(10)? (one_in(5)? veh_nukecar : veh_sandbike) : veh_motorcycle, vx, vy, one_in(2)? 90 : 270);
+  }
   break;
 
  case ot_park: {
@@ -5876,6 +5882,22 @@ void map::add_spawn(monster *mon)
  spawny %= SEEY;
  add_spawn(mon_id(mon->type->id), 1, spawnx, spawny, (mon->friendly < 0),
            mon->faction_id, mon->mission_id, spawnname);
+}
+
+vehicle *map::add_vehicle(vhtype_id type, int x, int y, int dir)
+{
+ if (x < 0 || x >= SEEX * MAPSIZE || y < 0 || y >= SEEY * MAPSIZE) {
+  debugmsg("Bad add_vehicle t=%d d=%d x=%d y=%d", type, dir, x, y);
+  return 0;
+ }
+// debugmsg("add_vehicle t=%d d=%d x=%d y=%d", type, dir, x, y);
+ int nonant = int(x / SEEX) + int(y / SEEY) * MAPSIZE;
+ x %= SEEX;
+ y %= SEEY;
+// debugmsg("n=%d x=%d y=%d MAPSIZE=%d ^2=%d", nonant, x, y, MAPSIZE, MAPSIZE*MAPSIZE);
+ vehicle veh(type, x, y, dir, 0);
+ grid[nonant].vehicles.push_back(veh);
+ return &grid[nonant].vehicles[grid[nonant].vehicles.size()-1];
 }
 
 computer* map::add_computer(int x, int y, std::string name, int security)

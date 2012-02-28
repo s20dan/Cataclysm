@@ -55,6 +55,405 @@ map::~map()
 {
 }
 
+vehicle& map::veh_at(int x, int y, int &part_num)
+{
+    if (!inbounds(x, y))
+        return nulveh;    // Out-of-bounds - null vehicle
+    int nonant = int(x / SEEX) + int(y / SEEY) * MAPSIZE;
+
+    x %= SEEX;
+    y %= SEEY;
+
+    // must check 3x3 map chunks, as vehicle part may span to neighbour chunk
+    // we presume that vehicles don't intersect (they shouldn't by any means)
+    for (int mx = -1; mx <= 1; mx++)
+        for (int my = -1; my <= 1; my++)
+        {
+            int nonant1 = nonant + mx + my * MAPSIZE;
+            if (nonant1 < 0 || nonant1 >= MAPSIZE * MAPSIZE)
+                continue; // out of grid
+            for (int i = 0; i < grid[nonant1].vehicles.size(); i++)
+            {
+                vehicle &veh = grid[nonant1].vehicles[i];
+                int part = veh.part_at (x - (veh.posx + mx * SEEX), y - (veh.posy + my * SEEY));
+                if (part >= 0)
+                {
+                    part_num = part;
+                    return veh;
+                }
+            }
+        }
+    return nulveh;
+}
+
+vehicle& map::veh_at(int x, int y)
+{
+ int part = 0;
+ vehicle &veh = veh_at (x, y, part);
+ return veh;
+}
+
+void map::board_vehicle(game *g, int x, int y, player *p)
+{
+    // currently supports only player
+    if (!p)
+    {
+        debugmsg ("map::board_vehicle: null player");
+        return;
+    }
+    vehicle &veh = veh_at(x, y);
+    if (veh.type == veh_null)
+    {
+        debugmsg ("map::board_vehicle: vehicle not found");
+        return;
+    }
+    veh.driven = true;
+    if (x < SEEX * int(MAPSIZE / 2) || y < SEEY * int(MAPSIZE / 2) ||
+        x >= SEEX * (1 + int(MAPSIZE / 2)) || y >= SEEY * (1 + int(MAPSIZE / 2)))
+        g->update_map(x, y);
+    p->posx = x;
+    p->posy = y;
+    p->drive_mode = true;
+}
+
+void map::unboard_vehicle(game *g, int x, int y)
+{
+    // currently supports only player
+    vehicle &veh = veh_at(x, y);
+    if (veh.type == veh_null)
+    {
+        debugmsg ("map::unboard_vehicle: vehicle not found");
+        return;
+    }
+    player *p = veh.get_driver(g);
+    veh.driven = false;
+    p->drive_mode = false;
+    p->driving_recoil = 0;
+    veh.skidding = true;
+}
+
+bool map::displace_vehicle (game *g, int &x, int &y, int dx, int dy, bool test=false)
+{
+    int x2 = x + dx;
+    int y2 = y + dy;
+    int srcx = x;
+    int srcy = y;
+    int dstx = x2;
+    int dsty = y2;
+
+    if (!inbounds(srcx, srcy))
+    {
+        debugmsg ("map::displace_vehicle: coords out of bounds %d,%d->%d,%d", srcx, srcy, dstx, dsty);
+        return false;
+    }
+
+    int src_na = int(srcx / SEEX) + int(srcy / SEEY) * MAPSIZE;
+    srcx %= SEEX;
+    srcy %= SEEY;
+
+    int dst_na = int(dstx / SEEX) + int(dsty / SEEY) * MAPSIZE;
+    dstx %= SEEX;
+    dsty %= SEEY;
+
+    if (test)
+        return src_na != dst_na;
+
+    // first, let's find our position in current vehicles vector
+    int our_i = -1;
+    for (int i = 0; i < grid[src_na].vehicles.size(); i++)
+    {
+        if (grid[src_na].vehicles[i].posx == srcx &&
+            grid[src_na].vehicles[i].posy == srcy)
+        {
+            our_i = i;
+            break;
+        }
+    }
+    if (our_i < 0)
+        return false;
+
+    // move the vehicle
+    vehicle &veh = grid[src_na].vehicles[our_i];
+    // don't let it go off grid
+    if (!inbounds(x2, y2))
+    {
+        veh.stop();
+        veh.driven = false;
+    }
+    veh.posx = dstx;
+    veh.posy = dsty;
+    player *p = veh.get_driver (g);
+    int rec = abs(veh.velocity) / 5 / 100;
+    if (src_na != dst_na)
+    {
+        grid[dst_na].vehicles.push_back (veh);
+        grid[src_na].vehicles.erase (grid[src_na].vehicles.begin() + our_i);
+    }
+
+    x += dx;
+    y += dy;
+    // move the driver
+    if (p)
+    {
+        rec -= p->sklevel[sk_driving];
+        if (rec < 0)
+            rec = 0;
+        p->driving_recoil = rec;
+        p->posx = x2;
+        p->posy = y2;
+        if (x2 < SEEX * int(MAPSIZE / 2) || y2 < SEEY * int(MAPSIZE / 2) ||
+            x2 >= SEEX * (1+int(MAPSIZE / 2)) || y2 >= SEEY * (1+int(MAPSIZE / 2)))
+        {
+            // map will shift, so adjust vehicle coords we've been passed
+            if (x2 < SEEX * int(MAPSIZE / 2))
+                x += SEEX;
+            else
+            if (x2 >= SEEX * (1+int(MAPSIZE / 2)))
+                x -= SEEX;
+            if (y2 < SEEY * int(MAPSIZE / 2))
+                y += SEEY;
+            else
+            if (y2 >= SEEY * (1+int(MAPSIZE / 2)))
+                y -= SEEY;
+            g->update_map(x2, y2);
+        }
+    }
+    return src_na != dst_na;
+}
+
+void map::vehmove(game *g)
+{
+    // give vehicles movement points
+    for (int i = 0; i < MAPSIZE; i++)
+        for (int j = 0; j < MAPSIZE; j++)
+        {
+            int sm = i + j * MAPSIZE;
+            for (int v = 0; v < grid[sm].vehicles.size(); v++)
+            {
+                vehicle &veh = grid[sm].vehicles[v];
+                // cruise control
+                if (veh.driven)
+                {
+                    if (veh.cruise_on)
+                    if (abs(veh.cruise_velocity - veh.velocity) >= veh.acceleration/2 ||
+                        (veh.cruise_velocity != 0 && veh.velocity == 0) ||
+                        (veh.cruise_velocity == 0 && veh.velocity != 0))
+                        veh.thrust (g, veh.cruise_velocity > veh.velocity? 1 : -1, veh.posx + i * SEEX, veh.posy + j * SEEY);
+                }
+                // velocity is ability to make more one-tile steps per turn
+                veh.moves += abs (veh.velocity);
+                if (veh.malfunction && veh.smoking_turns > 0)
+                { // broken -- emit smoke
+                    veh.smoking_turns--;
+                    for (int p = 0; p < veh.parts.size(); p++)
+                    {
+                        if (!(veh.parts[p].flags & VHP_ENGINE))
+                            continue;
+                        int rdx, rdy;
+                        veh.coord_translate (veh.parts[p].mount_dx, veh.parts[p].mount_dy, rdx, rdy);
+                        int x = veh.posx + i * SEEX;
+                        int y = veh.posy + j * SEEY;
+                        for (int ix = -1; ix <= 1; ix++)
+                            for (int iy = -1; iy <= 1; iy++)
+                                if (!rng(0, 2))
+                                    add_field(g, x + rdx + ix, y + rdy + iy, fd_smoke, rng(3, 5));
+                    }
+                }
+            }
+        }
+    // move vehicles
+    bool sm_change;
+    int count = 0;
+    do
+    {
+        sm_change = false;
+        for (int i = 0; i < MAPSIZE; i++)
+        {
+            for (int j = 0; j < MAPSIZE; j++)
+            {
+                int sm = i + j * MAPSIZE;
+                for (int v = 0; v < grid[sm].vehicles.size(); v++)
+                {
+                    vehicle &veh = grid[sm].vehicles[v];
+                    while (veh.moves > 0 && veh.velocity != 0)
+                    {
+                        int x = veh.posx + i * SEEX;
+                        int y = veh.posy + j * SEEY;
+                        if (has_flag(swimmable, x, y) &&
+                            move_cost_ter_only(x, y) == 0) // deep water
+                        {
+                            if (veh.get_driver(g) == &g->u)
+                                g->add_msg ("Your %s sank.", veh.name.c_str());
+                            unboard_vehicle (g, x, y);
+                            // destroy vehicle (sank to nowhere)
+                            grid[sm].vehicles.erase (grid[sm].vehicles.begin() + v);
+                            v--;
+                            break;
+                        }
+                        player *drv = veh.get_driver(g);
+                        // one-tile step take some of movement
+                        veh.moves -= 500 * move_cost_ter_only(i * SEEX + veh.posx, j * SEEY + veh.posy);
+                        if (veh.skidding && one_in(4)) // might turn uncontrollably while skidding
+                            veh.move.init (veh.move.dir() + (one_in(2)? -rng(1,3)*15 : rng(1,3)*15));
+                        else
+                        if (drv && rng(0, 4) > drv->sklevel[sk_driving] && one_in(20))
+                        {
+                            if (drv == &g->u)
+                                g->add_msg("You fumble with %s controls.", veh.name.c_str());
+                            veh.turn (g, one_in(2)? -15 : 15);
+                        }
+                        if (!drv && one_in (10)) // eventually send it skidding if no control
+                            veh.skidding = true;
+                        tileray mdir;
+                        if (veh.skidding)
+                        {
+                            mdir = veh.move;
+                        }
+                        else
+                        {
+                            if (veh.turn_dir != veh.face.dir())
+                                mdir.init (veh.turn_dir);
+                            else
+                                mdir = veh.face;
+                        }
+                        mdir.advance (veh.velocity < 0? -1 : 1);
+                        int dx = mdir.dx();           // where do we go
+                        int dy = mdir.dy();           // where do we go
+                        bool can_move = true;
+
+                        for (int p = 0; p < veh.parts.size(); p++)
+                        {
+                            int pdx, pdy;
+                            veh.coord_translate (veh.skidding? veh.turn_dir : mdir.dir(),
+                                                 veh.parts[p].mount_dx, veh.parts[p].mount_dy, pdx, pdy);
+                            if ((veh.parts[p].flags & VHP_GROUND) && one_in(2))
+                                if (displace_water (x + pdx, y + pdy) && veh.get_driver(g) == &g->u)
+                                    g->add_msg ("You hear splash!");
+                            int dsx = x + dx + pdx;
+                            int dsy = y + dy + pdy;
+                            if (!inbounds(dsx, dsy))
+                            { // leaving the grid? no!
+                                can_move = false;
+                                break;
+                            }
+                            if (can_move)
+                                can_move = veh.handle_collision (g, x, y, p, dsx, dsy);
+                            if (veh.velocity == 0)
+                                can_move = false;
+                            if (!can_move)
+                                break;
+                        }
+                        if (can_move)
+                            for (int p = 0; p < veh.parts.size(); p++)
+                            {
+                                int pdx, pdy;
+                                veh.coord_translate (veh.skidding? veh.turn_dir : mdir.dir(),
+                                                    veh.parts[p].mount_dx, veh.parts[p].mount_dy, pdx, pdy);
+                                if (veh.parts[p].flags & VHP_GROUND)
+                                    veh.handle_trap (g, x + pdx, y + pdy, p);
+                            }
+
+                        int last_turn_dec = 1;
+                        if (veh.last_turn != 0)
+                            if (veh.last_turn < 0)
+                            {
+                                veh.last_turn += last_turn_dec;
+                                if (veh.last_turn > -last_turn_dec)
+                                    veh.last_turn = 0;
+                            }
+                            else
+                            {
+                                veh.last_turn -= last_turn_dec;
+                                if (veh.last_turn < last_turn_dec)
+                                    veh.last_turn = 0;
+                            }
+                        int slowdown = veh.skidding? 200 : 20; // mph lost per tile when rolling free
+                        if (veh.velocity < 0)
+                            veh.velocity += slowdown;
+                        else
+                            veh.velocity -= slowdown;
+                        if (abs(veh.velocity) < 100)
+                            veh.stop();
+
+                        if (veh.driven)
+                        {
+                            // a bit of delay for animation
+                            timespec ts;   // Timespec for the animation
+                            ts.tv_sec = 0;
+                            ts.tv_nsec = 50000000;
+                            nanosleep (&ts, 0);
+                        }
+
+                        if (can_move)
+                        {
+                            // accept new direction
+                            if (veh.skidding)
+                                veh.face.init (veh.turn_dir);
+                            else
+                                veh.face = mdir;
+                            veh.move = mdir;
+                            // accept new position
+                            // if submap changed, we need to process grid from the beginning.
+                            sm_change = displace_vehicle (g, x, y, dx, dy);
+                        }
+                        else
+                            veh.stop();
+                        // redraw scene
+                        g->draw();
+                        if (sm_change)
+                            break;
+                    } // while (veh.moves
+                    if (sm_change)
+                        break;
+                } //for v
+                if (sm_change)
+                    break;
+            } // for j
+            if (sm_change)
+                break;
+        } // for i
+        count++;
+        if (count > 3)
+            debugmsg ("vehmove count:%d", count);
+    } while (sm_change);
+}
+
+bool map::displace_water (int x, int y)
+{
+    if (move_cost_ter_only(x, y) > 0 && has_flag(swimmable, x, y)) // shallow water
+    { // displace it
+        int dis_places = 0, sel_place = 0;
+        for (int pass = 0; pass < 2; pass++)
+        { // we do 2 passes.
+        // first, count how many non-water places around
+        // then choose one within count and fill it with water on second pass
+            if (pass)
+            {
+                sel_place = rng (0, dis_places - 1);
+                dis_places = 0;
+            }
+            for (int tx = -1; tx <= 1; tx++)
+                for (int ty = -1; ty <= 1; ty++)
+                {
+                    if ((!tx && !ty) || move_cost_ter_only(x + tx, y + ty) == 0)
+                        continue;
+                    ter_id ter0 = ter (x + tx, y + ty);
+                    if (ter0 == t_water_sh ||
+                        ter0 == t_water_dp)
+                        continue;
+                    if (pass && dis_places == sel_place)
+                    {
+                        ter (x + tx, y + ty) = t_water_sh;
+                        ter (x, y) = t_dirt;
+                        return true;
+                    }
+                    dis_places++;
+                }
+        }
+    }
+    return false;
+}
+
 ter_id& map::ter(int x, int y)
 {
  if (!INBOUNDS(x, y)) {
@@ -94,6 +493,14 @@ std::string map::features(int x, int y)
 }
 
 int map::move_cost(int x, int y)
+{
+ vehicle &veh = veh_at (x, y);
+ if (veh.type != veh_null)
+     return 8; // moving past vehicle cost 
+ return terlist[ter(x, y)].movecost;
+}
+
+int map::move_cost_ter_only(int x, int y)
 {
  return terlist[ter(x, y)].movecost;
 }
@@ -166,7 +573,7 @@ point map::random_outdoor_tile()
  return options[rng(0, options.size() - 1)];
 }
 
-bool map::bash(int x, int y, int str, std::string &sound)
+bool map::bash(int x, int y, int str, std::string &sound, int *res)
 {
  sound = "";
  bool smashed_web = false;
@@ -187,9 +594,12 @@ bool map::bash(int x, int y, int str, std::string &sound)
    i--;
   }
  }
+ int result = -1;
  switch (ter(x, y)) {
  case t_wall_wood:
-  if (str >= rng(0, 120)) {
+  result = rng(0, 120);
+  if (res) *res = result;
+  if (str >= result) {
    sound += "crash!";
    ter(x, y) = t_dirt;
    int num_boards = rng(8, 20);
@@ -204,7 +614,9 @@ bool map::bash(int x, int y, int str, std::string &sound)
  case t_door_c:
  case t_door_locked:
  case t_door_locked_alarm:
-  if (str >= rng(0, 40)) {
+  result = rng(0, 40);
+  if (res) *res = result;
+  if (str >= result) {
    sound += "smash!";
    ter(x, y) = t_door_b;
    return true;
@@ -214,7 +626,9 @@ bool map::bash(int x, int y, int str, std::string &sound)
   }
   break;
  case t_door_b:
-  if (str >= rng(0, 30)) {
+  result = rng(0, 30);
+  if (res) *res = result;
+  if (str >= result) {
    sound += "crash!";
    ter(x, y) = t_door_frame;
    int num_boards = rng(2, 6);
@@ -228,7 +642,9 @@ bool map::bash(int x, int y, int str, std::string &sound)
   break;
  case t_window:
  case t_window_alarm:
-  if (str >= rng(0, 6)) {
+  result = rng(0, 6);
+  if (res) *res = result;
+  if (str >= result) {
    sound += "glass breaking!";
    ter(x, y) = t_window_frame;
    return true;
@@ -238,7 +654,9 @@ bool map::bash(int x, int y, int str, std::string &sound)
   }
   break;
  case t_door_boarded:
-  if (str >= dice(3, 50)) {
+  result = dice(3, 50);
+  if (res) *res = result;
+  if (str >= result) {
    sound += "crash!";
    ter(x, y) = t_door_frame;
    int num_boards = rng(0, 2);
@@ -251,7 +669,9 @@ bool map::bash(int x, int y, int str, std::string &sound)
   }
   break;
  case t_window_boarded:
-  if (str >= dice(3, 30)) {
+  result = dice(3, 30);
+  if (res) *res = result;
+  if (str >= result) {
    sound += "crash!";
    ter(x, y) = t_window_frame;
    int num_boards = rng(0, 2) * rng(0, 1);
@@ -264,7 +684,9 @@ bool map::bash(int x, int y, int str, std::string &sound)
   }
   break;
  case t_paper:
-  if (str >= dice(2, 6) - 2) {
+  result = dice(2, 6) - 2;
+  if (res) *res = result;
+  if (str >= result) {
    sound += "rrrrip!";
    ter(x, y) = t_dirt;
    return true;
@@ -274,7 +696,9 @@ bool map::bash(int x, int y, int str, std::string &sound)
   }
   break;
  case t_toilet:
-  if (str >= dice(8, 4) - 8) {
+  result = dice(8, 4) - 8;
+  if (res) *res = result;
+  if (str >= result) {
    sound += "porcelain breaking!";
    ter(x, y) = t_rubble;
    return true;
@@ -285,7 +709,9 @@ bool map::bash(int x, int y, int str, std::string &sound)
   break;
  case t_dresser:
  case t_bookcase:
-  if (str >= dice(3, 45)) {
+  result = dice(3, 45);
+  if (res) *res = result;
+  if (str >= result) {
    sound += "smash!";
    ter(x, y) = t_floor;
    int num_boards = rng(4, 12);
@@ -302,7 +728,9 @@ bool map::bash(int x, int y, int str, std::string &sound)
  case t_wall_glass_h_alarm:
  case t_wall_glass_v_alarm:
  case t_door_glass_c:
-  if (str >= rng(0, 20)) {
+  result = rng(0, 20);
+  if (res) *res = result;
+  if (str >= result) {
    sound += "glass breaking!";
    ter(x, y) = t_floor;
    return true;
@@ -313,7 +741,9 @@ bool map::bash(int x, int y, int str, std::string &sound)
   break;
  case t_reinforced_glass_h:
  case t_reinforced_glass_v:
-  if (str >= rng(60, 100)) {
+  result = rng(60, 100);
+  if (res) *res = result;
+  if (str >= result) {
    sound += "glass breaking!";
    ter(x, y) = t_floor;
    return true;
@@ -323,7 +753,9 @@ bool map::bash(int x, int y, int str, std::string &sound)
   }
   break;
  case t_tree_young:
-  if (str >= rng(0, 50)) {
+  result = rng(0, 50);
+  if (res) *res = result;
+  if (str >= result) {
    sound += "crunch!";
    ter(x, y) = t_underbrush;
    int num_sticks = rng(0, 3);
@@ -336,7 +768,9 @@ bool map::bash(int x, int y, int str, std::string &sound)
   }
   break;
  case t_underbrush:
-  if (str >= rng(0, 30) && !one_in(4)) {
+  result = rng(0, 30);
+  if (res) *res = result;
+  if (str >= result && !one_in(4)) {
    sound += "crunch.";
    ter(x, y) = t_dirt;
    return true;
@@ -346,7 +780,9 @@ bool map::bash(int x, int y, int str, std::string &sound)
   }
   break;
  case t_marloss:
-  if (str > rng(0, 40)) {
+  result = rng(0, 40);
+  if (res) *res = result;
+  if (str >= result) {
    sound += "crunch!";
    ter(x, y) = t_fungus;
    return true;
@@ -356,7 +792,9 @@ bool map::bash(int x, int y, int str, std::string &sound)
   }
   break;
  case t_vat:
-  if (str >= dice(2, 20)) {
+  result = dice(2, 20);
+  if (res) *res = result;
+  if (str >= result) {
    sound += "ker-rash!";
    ter(x, y) = t_floor;
    return true;
@@ -366,7 +804,9 @@ bool map::bash(int x, int y, int str, std::string &sound)
   }
  case t_crate_c:
  case t_crate_o:
-  if (str >= dice(4, 20)) {
+  result = dice(4, 20);
+  if (res) *res = result;
+  if (str >= result) {
    sound += "smash";
    ter(x, y) = t_dirt;
    int num_boards = rng(1, 5);
@@ -377,8 +817,8 @@ bool map::bash(int x, int y, int str, std::string &sound)
    sound += "wham!";
    return true;
   }
-   
  }
+ if (res) *res = result;
  if (move_cost(x, y) == 0) {
   sound += "thump!";
   return true;
@@ -443,6 +883,31 @@ void map::shoot(game *g, int x, int y, int &dam, bool hit_items, unsigned flags)
  if (has_flag(alarmed, x, y) && !g->event_queued(EVENT_WANTED)) {
   g->sound(g->u.posx, g->u.posy, 30, "An alarm sounds!");
   g->add_event(EVENT_WANTED, int(g->turn) + 300, 0, g->levx, g->levy);
+ }
+
+ int part;
+ vehicle &veh = veh_at (x, y, part);
+ if (veh.type != veh_null)
+ {
+     if ((veh.parts[part].flags & VHP_FUEL_TANK) && veh.fuel_type == AT_GAS)
+        if (hit_items || one_in(3))
+        {
+            if (dam > 15 && veh.fuel >= veh.max_fuel / 5)
+            {
+                if (flags & mfb(IF_AMMO_INCENDIARY) || flags & mfb(IF_AMMO_FLAME))
+                    veh.explode(g, x, y);
+                else
+                {
+                    for (int i = x - 2; i <= x + 2; i++)
+                        for (int j = y - 2; j <= y + 2; j++)
+                            if (move_cost(i, j) > 0 && one_in(3))
+                                add_item(i, j, g->itypes[itm_gasoline], 0);
+                    veh.fuel = 0;
+                }
+                veh.malfunction = true;
+            }
+            dam -= 60;
+        }
  }
 
  switch (ter(x, y)) {
@@ -1121,13 +1586,17 @@ void map::drawsq(WINDOW* w, player &u, int x, int y, bool invert,
  nc_color tercol;
  char sym = terlist[ter(x, y)].sym;
  bool hi = false;
+ bool normal_tercol = false;    // indicates that tile color is not changed by effects (boomered, nigh vision)
  if (u.has_disease(DI_BOOMERED))
   tercol = c_magenta;
  else if ((u.is_wearing(itm_goggles_nv) && u.has_active_item(itm_UPS_on)) ||
           u.has_active_bionic(bio_night_vision))
   tercol = c_ltgreen;
  else
+ {
+  normal_tercol = true;
   tercol = terlist[ter(x, y)].color;
+ }
  if (move_cost(x, y) == 0 && has_flag(swimmable, x, y) && !u.underwater)
   show_items = false;	// Can only see underwater items if WE are underwater
 // If there's a trap here, and we have sufficient perception, draw that instead
@@ -1170,6 +1639,16 @@ void map::drawsq(WINDOW* w, player &u, int x, int y, bool invert,
    sym = i_at(x, y)[i_at(x, y).size() - 1].symbol();
   }
  }
+
+ int veh_part = 0;
+ vehicle &veh = veh_at(x, y, veh_part);
+ if (veh.type != veh_null)
+ {
+  sym = veh.face.dir_symbol(veh.parts[veh_part].sym);
+  if (normal_tercol)
+   tercol = veh.parts[veh_part].color;
+ }
+
  if (invert)
   mvwputch_inv(w, j, k, tercol, sym);
  else if (hi)
@@ -1470,10 +1949,17 @@ void map::shift(game *g, int wx, int wy, int sx, int sy)
   }
   return;
  }
+
+// if player is driving vehicle, (s)he must be shifted with vehicle too
+ if (g->u.drive_mode && (sx !=0 || sy != 0))
+ {
+     g->u.posx -= sx * SEEX;
+     g->u.posy -= sy * SEEY;
+ }
+
 // Shift the map sx submaps to the right and sy submaps down.
 // sx and sy should never be bigger than +/-1.
 // wx and wy are our position in the world, for saving/loading purposes.
-
  if (sx >= 0) {
   for (int gridx = 0; gridx < my_MAPSIZE; gridx++) {
    if (sy >= 0) {
@@ -1606,6 +2092,11 @@ void map::saven(overmap *om, unsigned int turn, int worldx, int worldy,
           tmpsp.mission_id << (tmpsp.friendly ? " 1 " : " 0 ") <<
           tmpsp.name << std::endl;
  }
+// Output the vehicles
+ for (int i = 0; i < grid[n].vehicles.size(); i++) {
+  fout << "V ";
+  grid[n].vehicles[i].save (fout);
+ }
 // Output the computer
  if (grid[n].comp.name != "")
   fout << "c " << grid[n].comp.save_data() << std::endl;
@@ -1634,6 +2125,7 @@ bool map::loadn(game *g, int worldx, int worldy, int gridx, int gridy)
  grid[gridn].active_item_count = 0;
  grid[gridn].field_count = 0;
  grid[gridn].comp = computer();
+ grid[gridn].vehicles.clear();
 
  sprintf(fname, "save/m.%d.%d.%d", g->cur_om.posx * OMAPX * 2 + worldx + gridx,
                                    g->cur_om.posy * OMAPY * 2 + worldy + gridy,
@@ -1667,7 +2159,7 @@ bool map::loadn(game *g, int worldx, int worldy, int gridx, int gridy)
     grid[gridn].rad[i][j] = radtmp;
    }
   }
-// Load items and traps and fields and spawn points
+// Load items and traps and fields and spawn points and vehicles
   while (!mapin.eof()) {
    t = 0;
    mapin >> ch;
@@ -1703,6 +2195,10 @@ bool map::loadn(game *g, int worldx, int worldy, int gridx, int gridy)
     spawn_point tmp(mon_id(t), a, itx, ity, tmpfac, tmpmis, (tmpfriend == '1'),
                     spawnname);
     grid[gridn].spawns.push_back(tmp);
+   } else if (!mapin.eof() && ch == 'V') {
+    vehicle veh;
+    veh.load (mapin, g);
+    grid[gridn].vehicles.push_back(veh);
    } else if (!mapin.eof() && ch == 'c') {
     getline(mapin, databuff);
     grid[gridn].comp.load_data(databuff);
@@ -1762,6 +2258,9 @@ void map::copy_grid(int to, int from)
  for (int i = 0; i < grid[from].spawns.size(); i++)
   grid[to].spawns.push_back(grid[from].spawns[i]);
 */
+ grid[to].vehicles.clear ();
+ for (int i = 0; i < grid[from].vehicles.size(); i++)
+  grid[to].vehicles.push_back(grid[from].vehicles[i]);
 }
 
 void map::spawn_monsters(game *g)
@@ -1859,3 +2358,4 @@ void map::cast_to_nonant(int &x, int &y, int &n)
 
 }
 */
+

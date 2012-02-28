@@ -126,6 +126,9 @@ class game
 
   void teleport(player *p = NULL);
   void plswim(int x, int y); // Called by plmove.  Handles swimming
+  // when player is thrown (by impact or something)
+  void fling_player_or_monster(player *p, monster *zz, int dir, int impulse);
+
   void nuke(int x, int y);
   std::vector<faction *> factions_at(int x, int y);
   int& scent(int x, int y);
@@ -182,7 +185,7 @@ class game
   ter_id dragging;
   std::vector<item> items_dragged;
   int weight_dragged; // Computed once, when you start dragging
-  bool debugmon;
+  bool debugmon; 
 // Display data... TODO: Make this more portable?
   WINDOW *w_terrain;
   WINDOW *w_minimap;
@@ -219,6 +222,7 @@ class game
   void monster_wish(); // Create a monster
   void mutation_wish(); // Mutate
 
+  void pldrive(int x, int y); // drive vehicle
   void plmove(int x, int y); // Standard movement; handles attacks, traps, &c
   void wait();	// Long wait (player action)	'^'
   void open();	// Open a door			'o'
@@ -234,6 +238,9 @@ class game
                         int level = -1, bool cont = false);
   void place_construction(constructable con); // See construction.cpp
   void complete_construction();               // See construction.cpp
+  bool pl_choose_vehicle (int &x, int &y);
+  bool pl_refill_vehicle (vehicle &veh);
+  void handbrake ();
   void examine();// Examine nearby terrain	'e'
   void pickup(int posx, int posy, int min);// Pickup items; ',' or via examine()
 // Pick where to put liquid; false if it's left where it was

@@ -2429,8 +2429,8 @@ BOOK("TIME magazine",		35,  40,c_pink,		PAPER,	MNULL,
 Current events concerning a bunch of people who're all (un)dead now.");
 
 BOOK("Top Gear magazine",	40,  45,c_pink,		PAPER,	MNULL,
-    1,  1, -3,  1,	sk_mechanics,	 1,  0,  1,  2,  8, "\
-Lots of articles about cars and mechanics.  You might learn a little.");
+    1,  1, -3,  1,	sk_driving,	 1,  0,  1,  2,  8, "\
+Lots of articles about cars and driving techniques.");
 
 BOOK("Bon Appetit",		30,  45,c_pink,		PAPER,	MNULL,
     1,  1, -3,  1,	sk_cooking,	 1,  0,  1,  5,  8, "\
